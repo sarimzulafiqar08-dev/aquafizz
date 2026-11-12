@@ -1,7 +1,7 @@
 import { ORDER_STATUSES, PAYMENT_STATUSES, STORAGE_KEYS } from '../lib/constants'
 import { readJson, wait, writeJson } from '../lib/storage'
 import { generateOrderNumber } from '../lib/format'
-import { refreshProducts, reserveStock } from './productService'
+import { refreshProducts, releaseStock, reserveStock } from './productService'
 import { supabase, unwrap } from './supabaseClient'
 
 /**
@@ -89,6 +89,7 @@ export async function getOrder(id) {
 export async function updateOrderStatus(id, status) {
   if (!ORDER_STATUSES.includes(status)) throw new Error('Unknown order status.')
   if (supabase) {
+    // The orders_status_change trigger puts stock back when an order is cancelled.
     const row = unwrap(
       await supabase
         .from('orders')
@@ -98,11 +99,16 @@ export async function updateOrderStatus(id, status) {
         .maybeSingle(),
     )
     if (!row) throw new Error('Order not found, or you are not allowed to update it.')
+    if (status === 'Cancelled') refreshProducts().catch(() => {})
     return fromRow(row)
   }
   await wait(200)
   const orders = listLocalOrders()
-  if (!orders.some((o) => o.id === id)) throw new Error('Order not found.')
+  const current = orders.find((o) => o.id === id)
+  if (!current) throw new Error('Order not found.')
+  if (current.status === status) return current
+  if (current.status === 'Cancelled') throw new Error('A cancelled order cannot be reopened. Ask the customer to order again.')
+  if (status === 'Cancelled') releaseStock(current.items || [])
   const next = orders.map((o) => (o.id === id ? { ...o, status, updatedAt: new Date().toISOString() } : o))
   writeJson(STORAGE_KEYS.orders, next)
   return next.find((o) => o.id === id)

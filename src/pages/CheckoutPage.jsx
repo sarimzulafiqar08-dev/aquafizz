@@ -6,8 +6,10 @@ import { LazyLocationPicker } from '../components/LazyLocationPicker'
 import { useAuth } from '../context/AuthContext'
 import { useCart } from '../context/CartContext'
 import { useCheckout } from '../context/CheckoutContext'
+import { useCartStockSync } from '../hooks/useCartStockSync'
 import { usePageSeo } from '../hooks/usePageSeo'
 import { DELIVERY_WINDOWS, DISTRICTS, PROVINCE } from '../lib/constants'
+import { localDateTimeInput, MIN_SCHEDULE_MINUTES, scheduleError } from '../lib/format'
 import { findDistrict } from '../lib/sindh'
 import { hasLocation, lettersOnly, nameError, normalizePhone, phoneError } from '../lib/validation'
 import { isDeliverable, reverseGeocode } from '../services/deliveryService'
@@ -25,6 +27,7 @@ export function CheckoutPage() {
   const [error, setError] = useState('')
   const { user } = useAuth()
   const [focus, setFocus] = useState(null)
+  useCartStockSync()
 
   // Prefill empty delivery fields from the signed-in user's profile.
   useEffect(() => {
@@ -203,19 +206,35 @@ export function CheckoutPage() {
                     id="scheduledAt"
                     type="datetime-local"
                     className={inputClass}
+                    min={localDateTimeInput(MIN_SCHEDULE_MINUTES)}
                     value={draft.scheduledAt}
-                    onChange={(e) => update({ scheduledAt: e.target.value })}
+                    onChange={(e) => {
+                      update({ scheduledAt: e.target.value })
+                      setError('')
+                    }}
                   />
                 </Field>
               ) : null}
+              {error ? <p className="text-sm text-red-600">{error}</p> : null}
               <div className="mt-2 flex gap-3">
-                <button type="button" className="rounded-full px-4 py-2 text-sm" onClick={() => setStep(1)}>
+                <button
+                  type="button"
+                  className="rounded-full px-4 py-2 text-sm"
+                  onClick={() => {
+                    setError('')
+                    setStep(1)
+                  }}
+                >
                   Back
                 </button>
                 <button
                   type="button"
                   className="rounded-full bg-primary px-5 py-2 text-sm font-semibold"
-                  onClick={() => setStep(3)}
+                  onClick={() => {
+                    const problem = draft.deliveryWindow === 'schedule' ? scheduleError(draft.scheduledAt) : ''
+                    setError(problem)
+                    if (!problem) setStep(3)
+                  }}
                 >
                   Continue
                 </button>

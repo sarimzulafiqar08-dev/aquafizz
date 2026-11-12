@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ErrorState, PageHeader, ProductSkeleton } from '../components/Feedback'
 import { ProductCard, QuantitySelector } from '../components/ProductCard'
-import { useCart } from '../context/CartContext'
+import { maxFor, useCart } from '../context/CartContext'
 import { useToast } from '../context/ToastContext'
 import { useWishlist } from '../context/WishlistContext'
 import { usePageSeo } from '../hooks/usePageSeo'
@@ -59,8 +59,14 @@ export function ProductDetailsPage() {
   const related = getRelatedProducts(allProducts, product)
 
   const add = () => {
-    addItem(product, qty)
-    push(`${product.name} added to cart`)
+    const added = addItem(product, qty)
+    if (!added) {
+      push(`You already have the most you can order (${maxFor(product.stock)}) in your cart`, 'error')
+    } else if (added < qty) {
+      push(`Only ${added} more added — that's all we have in stock`, 'error')
+    } else {
+      push(`${product.name} added to cart`)
+    }
   }
 
   return (
@@ -101,7 +107,7 @@ export function ProductDetailsPage() {
           </p>
           <p className="mt-4 text-slate-600">{product.description}</p>
           <div className="mt-6 flex flex-wrap items-center gap-3">
-            <QuantitySelector value={qty} onChange={setQty} max={Math.max(1, Math.min(20, product.stock))} disabled={out} />
+            <QuantitySelector value={qty} onChange={setQty} max={Math.max(1, maxFor(product.stock))} disabled={out} />
             <button
               type="button"
               disabled={out}

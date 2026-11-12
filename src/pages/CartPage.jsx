@@ -1,14 +1,15 @@
 import { Link } from 'react-router-dom'
 import { EmptyState, PageHeader } from '../components/Feedback'
 import { QuantitySelector } from '../components/ProductCard'
-import { useCart } from '../context/CartContext'
+import { maxFor, useCart } from '../context/CartContext'
+import { useCartStockSync } from '../hooks/useCartStockSync'
 import { useConfirm } from '../context/ConfirmContext'
 import { useToast } from '../context/ToastContext'
 import { usePageSeo } from '../hooks/usePageSeo'
 import { FREE_DELIVERY_MIN } from '../lib/constants'
 import { formatPKR } from '../lib/format'
 
-export function OrderSummary({ cta, ctaTo }) {
+export function OrderSummary({ cta, ctaTo, notice }) {
   const { summary, promo, setPromo } = useCart()
   return (
     <aside className="h-fit rounded-3xl border border-slate-100 bg-white p-5 shadow-[0_8px_30px_rgb(0_194_209_/_0.08)]">
@@ -50,6 +51,7 @@ export function OrderSummary({ cta, ctaTo }) {
           <p className="mt-1 text-xs text-emerald-600">WELCOME10 applied — 10% off.</p>
         ) : null}
       </div>
+      {notice ? <p className="mt-5 rounded-2xl bg-red-50 p-3 text-sm text-red-700">{notice}</p> : null}
       {cta ? (
         <Link
           to={ctaTo}
@@ -67,9 +69,11 @@ export function CartPage() {
     title: 'Cart | AquaFizz',
     description: 'Review your AquaFizz cart and checkout for fast delivery.',
   })
-  const { items, setQuantity, removeItem } = useCart()
+  const { items, setQuantity, removeItem, summary } = useCart()
   const { confirm } = useConfirm()
   const { push } = useToast()
+  useCartStockSync()
+  const blocked = summary.unavailable.length > 0
 
   return (
     <div>
@@ -100,9 +104,16 @@ export function CartPage() {
                   <p className="text-sm text-slate-500">
                     {item.size} · {formatPKR(item.price)}
                   </p>
+                  {item.stock === 0 ? (
+                    <p className="mt-1 text-xs font-medium text-red-600">Out of stock — please remove it to continue.</p>
+                  ) : typeof item.stock === 'number' && item.quantity >= item.stock ? (
+                    <p className="mt-1 text-xs font-medium text-amber-600">Only {item.stock} left</p>
+                  ) : null}
                   <div className="mt-auto flex items-center justify-between pt-3">
                     <QuantitySelector
                       value={item.quantity}
+                      max={maxFor(item.stock)}
+                      disabled={item.stock === 0}
                       onChange={(q) => setQuantity(item.id, q)}
                     />
                     <button
@@ -127,7 +138,7 @@ export function CartPage() {
               </li>
             ))}
           </ul>
-          <OrderSummary cta="Checkout" ctaTo="/checkout" />
+          <OrderSummary cta={blocked ? null : 'Checkout'} ctaTo="/checkout" notice={blocked ? 'Remove out-of-stock items to continue.' : ''} />
         </div>
       )}
     </div>

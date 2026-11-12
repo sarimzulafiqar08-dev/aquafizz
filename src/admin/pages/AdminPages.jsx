@@ -473,6 +473,7 @@ export function AdminUsersPage() {
 export function AdminOrdersPage() {
   usePageSeo({ title: 'Admin orders | AquaFizz' })
   const { push } = useToast()
+  const { confirm } = useConfirm()
   const { data: orders, setData: setOrders, loading, error, reload } = useAsync(listOrders, [], [])
   const [status, setStatus] = useState('')
   const [query, setQuery] = useState('')
@@ -486,6 +487,14 @@ export function AdminOrdersPage() {
   )
 
   const changeStatus = async (order, next) => {
+    if (next === 'Cancelled') {
+      const ok = await confirm({
+        title: `Cancel ${order.id}?`,
+        message: 'Stock for its items goes back to the shop. A cancelled order cannot be reopened.',
+        confirmLabel: 'Cancel order',
+      })
+      if (!ok) return
+    }
     setBusyId(order.id)
     try {
       const updated = await updateOrderStatus(order.id, next)
@@ -553,8 +562,9 @@ export function AdminOrdersPage() {
                     <select
                       aria-label={`Status for ${o.id}`}
                       value={o.status}
-                      disabled={busyId === o.id}
-                      className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium"
+                      disabled={busyId === o.id || o.status === 'Cancelled'}
+                      title={o.status === 'Cancelled' ? 'Cancelled orders cannot be reopened' : undefined}
+                      className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium disabled:opacity-60"
                       onChange={(e) => changeStatus(o, e.target.value)}
                     >
                       {[...new Set([o.status, ...ORDER_STATUSES])].map((s) => (
@@ -586,6 +596,12 @@ export function AdminOrdersPage() {
                         ) : null}
                         {o.delivery?.instructions ? <><br />Note: {o.delivery.instructions}</> : null}
                       </p>
+                      {o.estimatedDelivery ? (
+                        <>
+                          <p className="mt-3 font-medium">Delivery time</p>
+                          <p className="mt-1 text-slate-600">{o.estimatedDelivery}</p>
+                        </>
+                      ) : null}
                       <p className="mt-3 font-medium">Payment</p>
                       <p className="mt-1 text-slate-600">{o.paymentMethod} · {o.paymentStatus}</p>
                     </div>

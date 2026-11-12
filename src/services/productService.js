@@ -284,6 +284,18 @@ export function reserveStock(lines) {
   )
 }
 
+/** Puts stock back for a cancelled order (demo mode; Supabase does this in a trigger). */
+export function releaseStock(lines) {
+  const rows = readTable()
+  writeTable(
+    rows.map((p) => {
+      const qty = lines.filter((l) => l.id === p.id).reduce((sum, l) => sum + (Number(l.quantity) || 0), 0)
+      return qty ? { ...p, stock: p.stock + qty } : p
+    }),
+  )
+  emit(readTable())
+}
+
 /** Re-reads products after an order changed stock. */
 export async function refreshProducts() {
   if (supabase) await refreshRemote()

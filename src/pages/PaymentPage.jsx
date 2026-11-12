@@ -8,9 +8,10 @@ import { useCart } from '../context/CartContext'
 import { useCheckout } from '../context/CheckoutContext'
 import { useToast } from '../context/ToastContext'
 import { useAsync } from '../hooks/useAsync'
+import { useCartStockSync } from '../hooks/useCartStockSync'
 import { usePageSeo } from '../hooks/usePageSeo'
 import { CONTACT, PAYMENT_METHODS, PAYMENT_STATUSES } from '../lib/constants'
-import { estimateDelivery, formatPKR } from '../lib/format'
+import { estimateDelivery, formatPKR, scheduleError } from '../lib/format'
 import { placeOrder as placeOrderRequest } from '../services/orderService'
 import { getPaymentSettings, isMethodReady, uploadPaymentProof } from '../services/paymentService'
 import { OrderSummary } from './CartPage'
@@ -85,6 +86,7 @@ export function PaymentPage() {
   const [proofFile, setProofFile] = useState(null)
   const [proofPreview, setProofPreview] = useState('')
   const [transactionId, setTransactionId] = useState('')
+  useCartStockSync()
 
   if (items.length === 0) {
     return (
@@ -132,6 +134,17 @@ export function PaymentPage() {
   }
 
   const placeOrder = async () => {
+    if (summary.unavailable.length) {
+      const names = summary.unavailable.map((i) => i.name).join(', ')
+      push(`Not enough stock for ${names}. Update your cart to continue.`, 'error')
+      navigate('/cart')
+      return
+    }
+    const scheduleProblem = draft.deliveryWindow === 'schedule' ? scheduleError(draft.scheduledAt) : ''
+    if (scheduleProblem) {
+      push(`${scheduleProblem} Go back to checkout to change it.`, 'error')
+      return
+    }
     if (needsProof && !proofFile) {
       push('Please attach your payment screenshot.', 'error')
       return
@@ -154,7 +167,7 @@ export function PaymentPage() {
         payment: needsProof
           ? { method: method.id, transactionId: transactionId.trim(), proof, submittedAt: new Date().toISOString() }
           : { method: method.id },
-        estimatedDelivery: estimateDelivery(draft.deliveryWindow),
+        estimatedDelivery: estimateDelivery(draft.deliveryWindow, draft.scheduledAt),
       })
     } catch (err) {
       push(err.message, 'error')

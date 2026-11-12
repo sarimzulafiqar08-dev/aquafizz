@@ -54,8 +54,9 @@ export function WishlistPage() {
                 disabled={available.length === 0}
                 className="rounded-full bg-primary px-4 py-2 text-sm font-semibold disabled:bg-slate-200"
                 onClick={() => {
-                  available.forEach((p) => addItem(p, 1))
-                  push(`${available.length} ${available.length === 1 ? 'item' : 'items'} added to cart`)
+                  const added = available.filter((p) => addItem(p, 1) > 0).length
+                  if (added) push(`${added} ${added === 1 ? 'item' : 'items'} added to cart`)
+                  else push('These items are already in your cart at the most you can order', 'error')
                 }}
               >
                 Add all to cart

@@ -8,7 +8,9 @@ import {
   ShoppingBag,
   Users,
 } from 'lucide-react'
+import { Suspense } from 'react'
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { Spinner } from '../components/Feedback'
 import { useAuth } from '../context/AuthContext'
 import { Logo } from '../components/Logo'
 
@@ -90,7 +92,15 @@ export function AdminLayout() {
           ))}
         </nav>
         <div className="p-4 md:p-8">
-          <Outlet />
+          <Suspense
+            fallback={
+              <div className="grid min-h-[40vh] place-items-center text-primary" role="status" aria-label="Loading page">
+                <Spinner className="h-8 w-8" />
+              </div>
+            }
+          >
+            <Outlet />
+          </Suspense>
         </div>
       </div>
     </div>

@@ -1,6 +1,6 @@
 import { Heart, Minus, Plus } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useCart } from '../context/CartContext'
+import { maxFor, useCart } from '../context/CartContext'
 import { useToast } from '../context/ToastContext'
 import { useWishlist } from '../context/WishlistContext'
 import { formatPKR, stockLabel } from '../lib/format'
@@ -79,7 +79,7 @@ export function ProductCard({ product }) {
           {inCart ? (
             <QuantitySelector
               value={inCart.quantity}
-              max={Math.min(20, product.stock)}
+              max={maxFor(product.stock)}
               disabled={out}
               onChange={(q) => setQuantity(product.id, q)}
             />
@@ -92,11 +92,10 @@ export function ProductCard({ product }) {
             className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-black disabled:cursor-not-allowed disabled:bg-slate-200"
             onClick={() => {
               if (out) return
-              if (inCart && inCart.quantity >= product.stock) {
-                push(`Only ${product.stock} in stock`, 'error')
+              if (!addItem(product, 1)) {
+                push(`You already have the most you can order (${maxFor(product.stock)}) in your cart`, 'error')
                 return
               }
-              addItem(product, 1)
               push(`${product.name} added to cart`)
             }}
           >
