@@ -13,6 +13,7 @@ const legal = () => import('./pages/LegalPages')
 const orders = () => import('./pages/OrdersPages')
 
 const AdminLoginPage = page(() => import('./admin/pages/AdminLoginPage'), 'AdminLoginPage')
+const AdminMessagesPage = page(() => import('./admin/pages/AdminMessagesPage'), 'AdminMessagesPage')
 const AdminPaymentsPage = page(() => import('./admin/pages/AdminPaymentsPage'), 'AdminPaymentsPage')
 const AdminAnalyticsPage = page(admin, 'AdminAnalyticsPage')
 const AdminDashboardPage = page(admin, 'AdminDashboardPage')
@@ -107,6 +108,7 @@ export default function App() {
           <Route path="users" element={<AdminUsersPage />} />
           <Route path="customers" element={<Navigate to="/admin/users" replace />} />
           <Route path="payments" element={<AdminPaymentsPage />} />
+          <Route path="messages" element={<AdminMessagesPage />} />
           <Route path="analytics" element={<AdminAnalyticsPage />} />
           <Route path="settings" element={<AdminSettingsPage />} />
         </Route>

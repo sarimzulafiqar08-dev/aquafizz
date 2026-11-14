@@ -200,7 +200,10 @@ export function ShopPage() {
     }
   }, [attempt])
 
-  const brands = useMemo(() => [...new Set(all.map((p) => p.brand))].sort(), [all])
+  const brands = useMemo(
+    () => [...new Map(all.map((p) => [String(p.brand || '').trim().toLowerCase(), String(p.brand || '').trim()])).values()].filter(Boolean).sort(),
+    [all],
+  )
   const sizes = useMemo(() => [...new Set(all.map((p) => p.size).filter(Boolean))], [all])
 
   const visible = useMemo(() => {
@@ -211,6 +214,20 @@ export function ShopPage() {
     })
     return sortProducts(filtered, filters.sort)
   }, [all, filters])
+
+  // One section per brand (Pepsi, 7up, Sting…), biggest brands first; the chosen sort applies inside each.
+  const groups = useMemo(() => {
+    const map = new Map()
+    for (const p of visible) {
+      const brand = (p.brand || 'Other').trim()
+      const key = brand.toLowerCase()
+      if (!map.has(key)) map.set(key, { brand, items: [] })
+      map.get(key).items.push(p)
+    }
+    return [...map.entries()]
+      .map(([key, g]) => ({ ...g, id: `brand-${key.replace(/[^a-z0-9]+/g, '-')}` }))
+      .sort((a, b) => b.items.length - a.items.length || a.brand.localeCompare(b.brand))
+  }, [visible])
 
   return (
     <div>
@@ -263,11 +280,40 @@ export function ShopPage() {
           ) : visible.length === 0 ? (
             <EmptyState title="No products found" description="Try a different search or filter." />
           ) : (
-            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-              {visible.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
+            <>
+              {groups.length > 1 ? (
+                <nav aria-label="Jump to brand" className="sticky top-[69px] z-10 -mx-1 mb-6 flex gap-2 overflow-x-auto bg-white/95 px-1 py-2 backdrop-blur">
+                  {groups.map((g) => (
+                    <a
+                      key={g.id}
+                      href={`#${g.id}`}
+                      className="whitespace-nowrap rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium hover:border-primary hover:text-primary-dark"
+                    >
+                      {g.brand} <span className="text-slate-400">({g.items.length})</span>
+                    </a>
+                  ))}
+                </nav>
+              ) : null}
+              <div className="space-y-10">
+                {groups.map((g) => (
+                  <section key={g.id} id={g.id} aria-labelledby={`${g.id}-title`} className="scroll-mt-32">
+                    <div className="mb-4 flex items-baseline justify-between border-b border-slate-100 pb-2">
+                      <h2 id={`${g.id}-title`} className="text-xl font-bold">
+                        {g.brand}
+                      </h2>
+                      <span className="text-sm text-slate-500">
+                        {g.items.length} {g.items.length === 1 ? 'product' : 'products'}
+                      </span>
+                    </div>
+                    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                      {g.items.map((product) => (
+                        <ProductCard key={product.id} product={product} />
+                      ))}
+                    </div>
+                  </section>
+                ))}
+              </div>
+            </>
           )}
         </div>
       </div>

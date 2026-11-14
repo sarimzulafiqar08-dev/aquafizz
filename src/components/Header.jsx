@@ -1,5 +1,6 @@
 import { Heart, Menu, Search, ShoppingBag, User, X } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useCart } from '../context/CartContext'
@@ -14,6 +15,19 @@ export function Header() {
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
+
+  // While the menu is open: stop the page behind it scrolling, and close on Escape.
+  useEffect(() => {
+    if (!open) return
+    const previous = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    const onKey = (e) => e.key === 'Escape' && setOpen(false)
+    window.addEventListener('keydown', onKey)
+    return () => {
+      document.body.style.overflow = previous
+      window.removeEventListener('keydown', onKey)
+    }
+  }, [open])
 
   const submitSearch = (e) => {
     e.preventDefault()
@@ -104,10 +118,15 @@ export function Header() {
           </button>
         </div>
       </div>
-      {open ? (
-        <div className="fixed inset-0 z-50 bg-black/40 lg:hidden" onClick={() => setOpen(false)}>
+      {/* Rendered into <body>: the header's backdrop-blur would otherwise trap this
+          fixed overlay inside the header's own height on mobile browsers. */}
+      {open ? createPortal(
+        <div className="fixed inset-0 z-[60] bg-black/40 lg:hidden" onClick={() => setOpen(false)}>
           <div
-            className="absolute top-0 right-0 h-full w-[min(100%,20rem)] bg-white p-5 shadow-2xl"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Menu"
+            className="absolute top-0 right-0 h-dvh w-[min(85%,20rem)] overflow-y-auto overscroll-contain bg-white p-5 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between">
@@ -155,7 +174,8 @@ export function Header() {
               ) : null}
             </nav>
           </div>
-        </div>
+        </div>,
+        document.body,
       ) : null}
     </header>
   )

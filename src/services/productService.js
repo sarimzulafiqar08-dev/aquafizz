@@ -318,7 +318,7 @@ export function filterProducts(list, filters) {
       if (!hay.includes(q)) return false
     }
     if (filters.category && p.categorySlug !== filters.category) return false
-    if (filters.brand && p.brand !== filters.brand) return false
+    if (filters.brand && String(p.brand || '').trim().toLowerCase() !== filters.brand.trim().toLowerCase()) return false
     if (filters.size && p.size !== filters.size) return false
     if (filters.availability === 'in' && p.stock <= 0) return false
     if (filters.availability === 'out' && p.stock > 0) return false

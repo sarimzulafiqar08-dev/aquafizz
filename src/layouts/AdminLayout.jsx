@@ -3,6 +3,7 @@ import {
   CreditCard,
   LayoutDashboard,
   LogOut,
+  MessageCircle,
   Package,
   Settings,
   ShoppingBag,
@@ -20,6 +21,7 @@ const links = [
   { to: '/admin/products', label: 'Products', icon: Package },
   { to: '/admin/users', label: 'Users', icon: Users },
   { to: '/admin/payments', label: 'Payments', icon: CreditCard },
+  { to: '/admin/messages', label: 'Messages', icon: MessageCircle },
   { to: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
   { to: '/admin/settings', label: 'Settings', icon: Settings },
 ]

@@ -72,6 +72,7 @@ export const STORAGE_KEYS = {
   wishlist: key('wishlist'),
   checkout: key('checkout'),
   orders: key('orders'),
+  messages: key('messages'),
   user: 'aquafizz_user',
   admin: 'aquafizz_admin',
   products: 'aquafizz_products',
