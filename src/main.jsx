@@ -12,7 +12,23 @@ import { WishlistProvider } from './context/WishlistContext.jsx'
 import './index.css'
 import { isSupabaseConfigured } from './services/supabaseClient.js'
 
-registerSW({ immediate: true })
+// The installed app often resumes from the background instead of starting fresh, so it
+// would keep showing an old version. Check for a new deploy whenever it comes back into
+// view and every 30 minutes; autoUpdate then reloads the page onto the new version.
+registerSW({
+  immediate: true,
+  onRegisteredSW(swUrl, registration) {
+    if (!registration) return
+    const check = () => {
+      if (!navigator.onLine) return
+      registration.update().catch(() => {})
+    }
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') check()
+    })
+    setInterval(check, 30 * 60 * 1000)
+  },
+})
 
 const root = createRoot(document.getElementById('root'))
 
