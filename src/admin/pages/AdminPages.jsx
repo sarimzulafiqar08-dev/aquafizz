@@ -18,6 +18,7 @@ import { listOrders, updateOrderStatus } from '../../services/orderService'
 import { createProduct, deleteProduct, updateProduct } from '../../services/productService'
 import { isSupabaseConfigured } from '../../services/supabaseClient'
 import { ProductFormModal } from '../components/ProductFormModal'
+import { ProductImage } from '../../components/ProductImage'
 
 function useUsers() {
   const [users, setUsers] = useState([])
@@ -238,6 +239,12 @@ export function AdminProductsPage() {
     <div>
       <div className="flex flex-wrap items-start justify-between gap-4">
         <PageHeader title="Products" description={`${products.length} products in the catalog.`} />
+        {products.some((p) => !p.images.length) ? (
+          <p className="mb-4 rounded-2xl bg-amber-50 p-3 text-sm text-amber-800">
+            {products.filter((p) => !p.images.length).length} products have no photo yet. Customers see a placeholder
+            for these — tap a product to edit it and add a photo.
+          </p>
+        ) : null}
         <button
           type="button"
           className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-semibold"
@@ -273,10 +280,13 @@ export function AdminProductsPage() {
           <ul className="grid gap-3 md:hidden">
             {visible.map((p) => (
               <li key={p.id} className="flex gap-3 rounded-3xl border border-slate-100 bg-white p-3">
-                <img src={p.image} alt="" className="h-20 w-20 shrink-0 rounded-2xl border border-slate-100 bg-white object-contain p-1" />
+                <ProductImage src={p.image} alt="" compact className="h-20 w-20 shrink-0 rounded-2xl border border-slate-100 bg-white object-contain p-1" />
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-semibold">{p.name}</p>
-                  <p className="text-xs text-slate-500">{p.category} · {p.images.length} img</p>
+                  <p className="text-xs text-slate-500">
+                    {p.category} ·{' '}
+                    {p.images.length ? `${p.images.length} img` : <span className="font-semibold text-amber-600">No photo</span>}
+                  </p>
                   <p className="mt-1 text-sm">
                     <strong>{formatPKR(p.price)}</strong>
                     <span className={`ml-2 text-xs ${p.stock === 0 ? 'text-red-600' : 'text-slate-500'}`}>Stock {p.stock}</span>
@@ -307,11 +317,12 @@ export function AdminProductsPage() {
                   <tr key={p.id} className="border-t border-slate-100">
                     <td className="p-3">
                       <div className="flex items-center gap-3">
-                        <img src={p.image} alt="" className="h-12 w-12 rounded-xl border border-slate-100 bg-white object-contain p-0.5" />
+                        <ProductImage src={p.image} alt="" compact className="h-12 w-12 shrink-0 rounded-xl border border-slate-100 bg-white object-contain p-0.5" />
                         <div>
                           <Link to={`/products/${p.slug}`} className="font-medium hover:text-primary-dark">{p.name}</Link>
                           <p className="text-xs text-slate-500">
                             {p.brand}{p.size ? ` · ${p.size}` : ''}{p.featured ? ' · Featured' : ''}
+                            {p.images.length ? null : <span className="font-semibold text-amber-600"> · No photo</span>}
                           </p>
                         </div>
                       </div>

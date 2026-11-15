@@ -10,6 +10,7 @@ import { usePageSeo } from '../hooks/usePageSeo'
 import { formatPKR, stockLabel } from '../lib/format'
 import { useProducts } from '../hooks/useProducts'
 import { getProductBySlug, getRelatedProducts } from '../services/productService'
+import { ProductImage } from '../components/ProductImage'
 
 export function ProductDetailsPage() {
   const { slug } = useParams()
@@ -74,9 +75,10 @@ export function ProductDetailsPage() {
       <PageHeader eyebrow={product.category} title={product.name} />
       <div className="grid gap-8 md:grid-cols-2">
         <div>
-          <img
+          <ProductImage
             src={product.images[activeImage] || product.image}
             alt={product.name}
+            brand={product.brand}
             className="h-80 w-full rounded-[2rem] border border-slate-100 bg-white object-contain p-6 md:h-[28rem]"
           />
           {product.images.length > 1 ? (
@@ -92,7 +94,7 @@ export function ProductDetailsPage() {
                   }`}
                   onClick={() => setActiveImage(i)}
                 >
-                  <img src={src} alt="" className="h-full w-full bg-white object-contain p-1" />
+                  <ProductImage src={src} alt="" compact className="h-full w-full bg-white object-contain p-1" />
                 </button>
               ))}
             </div>

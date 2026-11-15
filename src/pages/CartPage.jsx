@@ -8,6 +8,7 @@ import { useToast } from '../context/ToastContext'
 import { usePageSeo } from '../hooks/usePageSeo'
 import { FREE_DELIVERY_MIN } from '../lib/constants'
 import { formatPKR } from '../lib/format'
+import { ProductImage } from '../components/ProductImage'
 
 export function OrderSummary({ cta, ctaTo, notice }) {
   const { summary, promo, setPromo } = useCart()
@@ -96,7 +97,7 @@ export function CartPage() {
                 key={item.id}
                 className="flex gap-4 rounded-3xl border border-slate-100 p-4"
               >
-                <img src={item.image} alt={item.name} className="h-24 w-24 rounded-2xl border border-slate-100 bg-white object-contain p-1" />
+                <ProductImage src={item.image} alt={item.name} compact className="h-24 w-24 shrink-0 rounded-2xl border border-slate-100 bg-white object-contain p-1" />
                 <div className="flex flex-1 flex-col">
                   <Link to={`/products/${item.slug}`} className="font-semibold">
                     {item.name}

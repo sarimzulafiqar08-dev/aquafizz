@@ -4,6 +4,7 @@ import { maxFor, useCart } from '../context/CartContext'
 import { useToast } from '../context/ToastContext'
 import { useWishlist } from '../context/WishlistContext'
 import { formatPKR, stockLabel } from '../lib/format'
+import { ProductImage } from './ProductImage'
 
 export function QuantitySelector({ value, onChange, min = 1, max = 20, disabled }) {
   return (
@@ -43,9 +44,10 @@ export function ProductCard({ product }) {
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-[0_8px_30px_rgb(0_194_209_/_0.08)] transition hover:-translate-y-0.5 hover:shadow-lg">
       <Link to={`/products/${product.slug}`} className="relative block overflow-hidden bg-white">
-        <img
+        <ProductImage
           src={product.image}
           alt={product.name}
+          brand={product.brand}
           className="h-48 w-full object-contain p-4 transition duration-500 group-hover:scale-105"
         />
         <span className="absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium">
