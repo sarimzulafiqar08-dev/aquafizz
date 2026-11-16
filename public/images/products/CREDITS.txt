@@ -1,0 +1,23 @@
+Product photos in this folder are edited (background removed, resized, size badge added)
+from photos on Open Food Facts (https://world.openfoodfacts.org), licensed CC BY-SA 3.0
+(https://creativecommons.org/licenses/by-sa/3.0/). The edited images are shared under the same licence.
+
+Rebuild them with: python scripts/make-product-photos.py <folder-with-source-photos>
+
+pepsi-345ml.jpg: https://world.openfoodfacts.org/product/5741000224403
+pepsi-500ml.jpg: https://world.openfoodfacts.org/product/87177404
+pepsi-tenpack.jpg: https://world.openfoodfacts.org/product/87177404
+pepsi-1l.jpg: https://world.openfoodfacts.org/product/6212201012124
+pepsi-1500ml.jpg: https://world.openfoodfacts.org/product/4060800001771
+pepsi-2500ml.jpg: https://world.openfoodfacts.org/product/3800747001172
+pepsi-tenpack-diet.jpg: https://world.openfoodfacts.org/product/0012000172007
+7up-345ml.jpg: photo supplied by the AquaFizz store owner
+7up-500ml.jpg: photo supplied by the AquaFizz store owner
+7up-1l.jpg: photo supplied by the AquaFizz store owner
+7up-1500ml.jpg: photo supplied by the AquaFizz store owner
+7up-2500ml.jpg: photo supplied by the AquaFizz store owner
+mirinda-1l.jpg: photo supplied by the AquaFizz store owner
+mirinda-1500ml.jpg: photo supplied by the AquaFizz store owner
+mirinda-2500ml.jpg: photo supplied by the AquaFizz store owner
+mirinda-500ml.jpg: photo supplied by the AquaFizz store owner
+mirinda-345ml.jpg: photo supplied by the AquaFizz store owner

@@ -28,8 +28,8 @@ export function ErrorState({ title = 'Something went wrong', description, onRetr
 
 export function ProductSkeleton() {
   return (
-    <div className="animate-pulse overflow-hidden rounded-3xl border border-slate-100">
-      <div className="h-48 bg-slate-200" />
+    <div className="animate-pulse overflow-hidden rounded-2xl border sm:rounded-3xl border-slate-100">
+      <div className="aspect-square bg-slate-200" />
       <div className="space-y-3 p-4">
         <div className="h-3 w-16 rounded bg-slate-200" />
         <div className="h-4 w-40 rounded bg-slate-200" />

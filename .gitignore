@@ -26,3 +26,6 @@ dist-ssr
 
 .vercel
 .env*
+
+# Python bytecode (scripts/*.py)
+__pycache__/

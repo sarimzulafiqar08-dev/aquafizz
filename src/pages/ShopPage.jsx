@@ -264,13 +264,15 @@ export function ShopPage() {
           </button>
         </div>
       </div>
-      <div className="grid gap-8 lg:grid-cols-[16rem_1fr]">
+      {/* minmax(0,1fr) / min-w-0: the long brand-chip row scrolls inside the column instead of
+          stretching it past the phone screen (which squeezed the grid to one card per row). */}
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[16rem_minmax(0,1fr)]">
         <aside className="hidden rounded-3xl border border-slate-100 p-4 lg:block">
           <FilterFields filters={filters} setFilters={setFilters} brands={brands} sizes={sizes} />
         </aside>
-        <div>
+        <div className="min-w-0">
           {loading ? (
-            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-3">
               {Array.from({ length: 6 }).map((_, i) => (
                 <ProductSkeleton key={i} />
               ))}
@@ -305,7 +307,7 @@ export function ShopPage() {
                         {g.items.length} {g.items.length === 1 ? 'product' : 'products'}
                       </span>
                     </div>
-                    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                    <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-3">
                       {g.items.map((product) => (
                         <ProductCard key={product.id} product={product} />
                       ))}

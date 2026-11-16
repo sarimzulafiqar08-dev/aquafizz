@@ -20,7 +20,7 @@ export function WishlistPage() {
     <div>
       <PageHeader eyebrow="Saved" title="Wishlist" description="Your favourite drinks, ready when you are." />
       {loading ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
           {Array.from({ length: 4 }).map((_, i) => (
             <ProductSkeleton key={i} />
           ))}
@@ -63,7 +63,7 @@ export function WishlistPage() {
               </button>
             </div>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
             {saved.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}

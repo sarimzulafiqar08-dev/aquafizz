@@ -85,41 +85,44 @@ export function HomePage() {
 
       <section>
         <div className="mb-6 flex items-end justify-between">
-          <h2 className="text-2xl font-bold">Shop by category</h2>
+          <h2 className="text-xl font-bold sm:text-2xl">Shop by category</h2>
           <Link to="/categories" className="text-sm font-medium text-primary-dark">
             All categories
           </Link>
         </div>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
           {categories.map((cat) => (
-            <article
+            <Link
               key={cat.slug}
-              className="overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-[0_8px_30px_rgb(0_194_209_/_0.08)]"
+              to={`/products?category=${cat.slug}`}
+              className="group overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-[0_8px_30px_rgb(0_194_209_/_0.08)] sm:rounded-3xl"
             >
-              <img src={cat.image} alt={cat.name} className="h-40 w-full object-cover" />
-              <div className="p-5">
-                <h3 className="text-lg font-semibold">{cat.name}</h3>
-                <p className="mt-1 text-sm text-slate-600">{cat.description}</p>
-                <Link
-                  to={`/products?category=${cat.slug}`}
-                  className="mt-4 inline-flex rounded-full bg-light-aqua px-4 py-2 text-sm font-semibold"
-                >
-                  View Products
-                </Link>
+              <img
+                src={cat.image}
+                alt={cat.name}
+                loading="lazy"
+                className="h-28 w-full object-cover transition duration-500 group-hover:scale-105 sm:h-40"
+              />
+              <div className="p-3 sm:p-5">
+                <h3 className="text-sm font-semibold sm:text-lg">{cat.name}</h3>
+                <p className="mt-1 hidden text-sm text-slate-600 sm:block">{cat.description}</p>
+                <span className="mt-2 inline-flex text-xs font-semibold text-primary-dark sm:mt-4 sm:rounded-full sm:bg-light-aqua sm:px-4 sm:py-2 sm:text-sm sm:text-black">
+                  View Products →
+                </span>
               </div>
-            </article>
+            </Link>
           ))}
         </div>
       </section>
 
       <section>
         <div className="mb-6 flex items-end justify-between">
-          <h2 className="text-2xl font-bold">Featured products</h2>
+          <h2 className="text-xl font-bold sm:text-2xl">Featured products</h2>
           <Link to="/products" className="text-sm font-medium text-primary-dark">
             Shop all
           </Link>
         </div>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
           {featured.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
