@@ -5,7 +5,7 @@ import { EmptyState, ErrorState, PageHeader, ProductSkeleton } from '../componen
 import { ProductCard } from '../components/ProductCard'
 import { usePageSeo } from '../hooks/usePageSeo'
 import { categories } from '../lib/catalog'
-import { SORT_OPTIONS } from '../lib/constants'
+import { brandRank, SORT_OPTIONS } from '../lib/constants'
 import { filterProducts, listProducts, sortProducts, subscribeProducts } from '../services/productService'
 
 const emptyFilters = {
@@ -201,7 +201,7 @@ export function ShopPage() {
   }, [attempt])
 
   const brands = useMemo(
-    () => [...new Map(all.map((p) => [String(p.brand || '').trim().toLowerCase(), String(p.brand || '').trim()])).values()].filter(Boolean).sort(),
+    () => [...new Map(all.map((p) => [String(p.brand || '').trim().toLowerCase(), String(p.brand || '').trim()])).values()].filter(Boolean).sort((a, b) => brandRank(a) - brandRank(b) || a.localeCompare(b)),
     [all],
   )
   const sizes = useMemo(() => [...new Set(all.map((p) => p.size).filter(Boolean))], [all])
@@ -215,7 +215,7 @@ export function ShopPage() {
     return sortProducts(filtered, filters.sort)
   }, [all, filters])
 
-  // One section per brand (Pepsi, 7up, Sting…), biggest brands first; the chosen sort applies inside each.
+  // One section per brand in the store's order (BRAND_ORDER); the chosen sort applies inside each.
   const groups = useMemo(() => {
     const map = new Map()
     for (const p of visible) {
@@ -226,7 +226,12 @@ export function ShopPage() {
     }
     return [...map.entries()]
       .map(([key, g]) => ({ ...g, id: `brand-${key.replace(/[^a-z0-9]+/g, '-')}` }))
-      .sort((a, b) => b.items.length - a.items.length || a.brand.localeCompare(b.brand))
+      .sort(
+        (a, b) =>
+          brandRank(a.brand) - brandRank(b.brand) ||
+          b.items.length - a.items.length ||
+          a.brand.localeCompare(b.brand),
+      )
   }, [visible])
 
   return (

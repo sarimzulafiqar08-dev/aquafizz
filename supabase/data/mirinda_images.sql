@@ -1,7 +1,7 @@
 -- AquaFizz: Mirinda product photos (public/images/products/mirinda-*.jpg). Safe to re-run.
 -- Run in Supabase → SQL Editor (project xrgcryiyqgavojrfugqh) after the site is deployed.
 
-begin;
+begin;  
 
 with pics(slug, path) as (
   values

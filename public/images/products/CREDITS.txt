@@ -4,13 +4,13 @@ from photos on Open Food Facts (https://world.openfoodfacts.org), licensed CC BY
 
 Rebuild them with: python scripts/make-product-photos.py <folder-with-source-photos>
 
-pepsi-345ml.jpg: https://world.openfoodfacts.org/product/5741000224403
-pepsi-500ml.jpg: https://world.openfoodfacts.org/product/87177404
-pepsi-tenpack.jpg: https://world.openfoodfacts.org/product/87177404
-pepsi-1l.jpg: https://world.openfoodfacts.org/product/6212201012124
-pepsi-1500ml.jpg: https://world.openfoodfacts.org/product/4060800001771
-pepsi-2500ml.jpg: https://world.openfoodfacts.org/product/3800747001172
-pepsi-tenpack-diet.jpg: https://world.openfoodfacts.org/product/0012000172007
+pepsi-345ml.jpg: photo supplied by the AquaFizz store owner
+pepsi-500ml.jpg: photo supplied by the AquaFizz store owner
+pepsi-tenpack.jpg: photo supplied by the AquaFizz store owner
+pepsi-1l.jpg: photo supplied by the AquaFizz store owner
+pepsi-1500ml.jpg: photo supplied by the AquaFizz store owner
+pepsi-2500ml.jpg: photo supplied by the AquaFizz store owner
+pepsi-tenpack-diet.jpg: photo supplied by the AquaFizz store owner
 7up-345ml.jpg: photo supplied by the AquaFizz store owner
 7up-500ml.jpg: photo supplied by the AquaFizz store owner
 7up-1l.jpg: photo supplied by the AquaFizz store owner
@@ -21,3 +21,8 @@ mirinda-1500ml.jpg: photo supplied by the AquaFizz store owner
 mirinda-2500ml.jpg: photo supplied by the AquaFizz store owner
 mirinda-500ml.jpg: photo supplied by the AquaFizz store owner
 mirinda-345ml.jpg: photo supplied by the AquaFizz store owner
+dew-345ml.jpg: photo supplied by the AquaFizz store owner
+dew-500ml.jpg: photo supplied by the AquaFizz store owner
+dew-1l.jpg: photo supplied by the AquaFizz store owner
+dew-1500ml.jpg: photo supplied by the AquaFizz store owner
+dew-2500ml.jpg: photo supplied by the AquaFizz store owner

@@ -51,6 +51,21 @@ export const PROMO_CODES = {
   WELCOME10: { type: 'percent', value: 10, label: '10% off' },
 }
 
+// Order of brand sections on the Shop page. Brands not listed here go after the soft drinks
+// (before the water brands at the end), largest first.
+export const BRAND_ORDER = ['Pepsi', '7up', 'Dew', 'Mirinda', 'Sting', 'Gormy Cola', 'Quice', 'Slice', 'Bravo']
+export const BRAND_ORDER_LAST = ['Aqua', 'Aquafina']
+
+/** Sort key for a brand name: listed brands in order, unknown ones next, water brands last. */
+export function brandRank(brand) {
+  const key = String(brand || '').trim().toLowerCase()
+  const first = BRAND_ORDER.findIndex((b) => b.toLowerCase() === key)
+  if (first !== -1) return first
+  const last = BRAND_ORDER_LAST.findIndex((b) => b.toLowerCase() === key)
+  if (last !== -1) return 1000 + last
+  return 500
+}
+
 export const DELIVERY_FEE = 149
 export const FREE_DELIVERY_MIN = 2500
 

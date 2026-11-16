@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { Spinner } from './components/Feedback'
+import { OfflineBanner } from './components/OfflineBanner'
 import { RequireAdmin, RequireUser } from './components/Guards'
 import { HomePage } from './pages/HomePage'
 import { AdminLayout } from './layouts/AdminLayout'
@@ -116,6 +117,7 @@ export default function App() {
         <Route path="*" element={<Storefront><NotFoundPage /></Storefront>} />
       </Routes>
       </Suspense>
+      <OfflineBanner />
     </BrowserRouter>
   )
 }

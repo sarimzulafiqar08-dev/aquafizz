@@ -134,6 +134,10 @@ export function PaymentPage() {
   }
 
   const placeOrder = async () => {
+    if (!navigator.onLine) {
+      push('Aap offline hain. Internet on karke dobara "Place order" dabayein — aap ka cart mehfooz hai.', 'error')
+      return
+    }
     if (summary.unavailable.length) {
       const names = summary.unavailable.map((i) => i.name).join(', ')
       push(`Not enough stock for ${names}. Update your cart to continue.`, 'error')

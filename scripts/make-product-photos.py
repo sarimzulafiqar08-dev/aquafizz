@@ -27,13 +27,15 @@ FONT = 'C:/Windows/Fonts/arialbd.ttf'
 #   crop   optional (left, top, right, bottom) fractions to trim the photo first
 PRODUCTS = {
     # Pepsi
-    'pepsi-345ml': dict(src='pepsi/can-330ml.jpg', label='345 ml', share=0.62, mode='can'),
-    'pepsi-500ml': dict(src='pepsi/bottle-small.jpg', label='500 ml', share=0.70, tol=40),
-    'pepsi-1l': dict(src='pepsi/bottle-1l.jpg', label='1 Litre', share=0.76, tol=22, crop=(0, 0, 0.94, 1), erode=9),
-    'pepsi-1500ml': dict(src='pepsi/bottle-2l.jpg', label='1.5 Litre', share=0.82, tol=40),
-    'pepsi-2500ml': dict(src='pepsi/bottle-2-5l.jpg', label='2.5 Litre', share=0.86, tol=40),
-    'pepsi-tenpack': dict(src='PACK', pack_of='pepsi/bottle-small.jpg', label='10 × 250 ml', share=0.58, tol=40),
-    'pepsi-tenpack-diet': dict(src='pepsi/pack-diet.jpg', label='Diet · 10 × 250 ml', share=0.62, tol=40),
+    # 345ml–2.5L: studio photos supplied by the store owner, cropped above their floor reflection.
+    'pepsi-345ml': dict(src='pepsi/user-345ml.png', label='345 ml', share=0.62, tol=18, crop=(420 / 1024, 15 / 572, 620 / 1024, 502 / 572)),
+    'pepsi-500ml': dict(src='pepsi/user-500ml.png', label='500 ml', share=0.68, tol=18, crop=(420 / 1024, 15 / 572, 620 / 1024, 502 / 572)),
+    'pepsi-1l': dict(src='pepsi/user-1l.png', label='1 Litre', share=0.76, tol=18, crop=(420 / 1024, 15 / 572, 620 / 1024, 502 / 572)),
+    'pepsi-1500ml': dict(src='pepsi/user-1500ml.png', label='1.5 Litre', share=0.83, tol=18, crop=(420 / 1024, 15 / 572, 620 / 1024, 502 / 572)),
+    'pepsi-2500ml': dict(src='pepsi/user-2500ml.png', label='2.5 Litre', share=0.9, tol=18, crop=(420 / 1024, 15 / 572, 620 / 1024, 502 / 572)),
+    # TenPacks: can studio shots supplied by the store owner, used as-is (centre square).
+    'pepsi-tenpack': dict(src='pepsi/user-can.png', label='10 × 250 ml', mode='photo'),
+    'pepsi-tenpack-diet': dict(src='pepsi/user-can-diet.png', label='Diet · 10 × 250 ml', mode='photo'),
     # 7up
     # 345ml: finished studio shot supplied by the store owner, used as-is (centre square).
     '7up-345ml': dict(src='7up/can-user.png', label='345 ml', mode='photo'),
@@ -42,6 +44,13 @@ PRODUCTS = {
     '7up-1l': dict(src='7up/bottle-1l-user.png', label='1 Litre', share=0.76, tol=18, crop=(420 / 1024, 20 / 572, 620 / 1024, 502 / 572)),
     '7up-1500ml': dict(src='7up/bottle-1l-user.png', label='1.5 Litre', share=0.84, tol=18, crop=(420 / 1024, 20 / 572, 620 / 1024, 502 / 572)),
     '7up-2500ml': dict(src='7up/bottle-2500ml-user.png', label='2.5 Litre', share=0.9, tol=18, crop=(425 / 1024, 20 / 572, 620 / 1024, 507 / 572)),
+    # Dew
+    # All sizes: studio photos supplied by the store owner, cropped above their floor reflection.
+    'dew-345ml': dict(src='dew/user-345ml.png', label='345 ml', share=0.62, tol=18, crop=(420 / 1024, 15 / 572, 620 / 1024, 502 / 572)),
+    'dew-500ml': dict(src='dew/user-500ml.png', label='500 ml', share=0.68, tol=18, crop=(420 / 1024, 15 / 572, 620 / 1024, 502 / 572)),
+    'dew-1l': dict(src='dew/user-1l.png', label='1 Litre', share=0.76, tol=18, crop=(420 / 1024, 15 / 572, 620 / 1024, 502 / 572)),
+    'dew-1500ml': dict(src='dew/user-1500ml.png', label='1.5 Litre', share=0.83, tol=18, crop=(420 / 1024, 15 / 572, 620 / 1024, 502 / 572)),
+    'dew-2500ml': dict(src='dew/user-2500ml.png', label='2.5 Litre', share=0.9, tol=18, crop=(420 / 1024, 15 / 572, 620 / 1024, 502 / 572)),
     # Mirinda
     # All Mirinda sizes: studio shots (bottle + glass) supplied by the store owner; square around both.
     'mirinda-345ml': dict(src='mirinda/bottle-345ml-user.png', label='345 ml', mode='photo', crop=(448 / 1024, 0, 1020 / 1024, 1)),
@@ -120,6 +129,7 @@ def pack_of(bottle, count=5):
 THEMES = {
     'pepsi': dict(centre=(246, 251, 255), edge=(176, 212, 240), fruit=False),
     '7up': dict(centre=(244, 252, 247), edge=(178, 222, 198), fruit=True),
+    'dew': dict(centre=(250, 253, 240), edge=(205, 226, 160), fruit=False),
 }
 
 
@@ -242,7 +252,7 @@ def main():
             left, top = (photo.width - side) // 2, (photo.height - side) // 2
             img = photo.crop((left, top, left + side, top + side)).resize((SIZE, SIZE), Image.LANCZOS).convert('RGBA')
         else:
-            theme = THEMES['7up' if name.startswith('7up') else 'pepsi']
+            theme = THEMES[next((t for t in THEMES if name.startswith(t + '-')), 'pepsi')]
             img = place(build(src, spec), spec['share'], theme)
         badge(img, spec['label'])
         img.convert('RGB').save(OUT / f'{name}.jpg', quality=86, optimize=True, progressive=True)
