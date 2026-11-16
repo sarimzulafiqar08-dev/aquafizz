@@ -5,7 +5,7 @@ begin;
 
 with pics(slug, path) as (
   values
-    ('mirinda-1',   '/images/products/mirinda-345ml.jpg'),
+    ('mirinda',   '/images/products/mirinda-345ml.jpg'),
     ('mirinda-2', '/images/products/mirinda-500ml.jpg'),
     ('mirinda-3', '/images/products/mirinda-1l.jpg'),
     ('mirinda-4', '/images/products/mirinda-1500ml.jpg'),
