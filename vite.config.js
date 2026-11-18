@@ -15,7 +15,7 @@ export default defineConfig({
         short_name: 'AquaFizz',
         description:
           'Cold drinks, mineral water and juices delivered fast to your door.',
-        theme_color: '#00C2D1',
+        theme_color: '#138F96',
         background_color: '#FFFFFF',
         display: 'standalone',
         start_url: '/',

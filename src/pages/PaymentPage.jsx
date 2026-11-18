@@ -13,6 +13,7 @@ import { usePageSeo } from '../hooks/usePageSeo'
 import { CONTACT, PAYMENT_METHODS, PAYMENT_STATUSES } from '../lib/constants'
 import { estimateDelivery, formatPKR, scheduleError } from '../lib/format'
 import { placeOrder as placeOrderRequest } from '../services/orderService'
+import { checkReceipt } from '../lib/receiptCheck'
 import { getPaymentSettings, isMethodReady, uploadPaymentProof } from '../services/paymentService'
 import { OrderSummary } from './CartPage'
 
@@ -85,6 +86,8 @@ export function PaymentPage() {
   const [busy, setBusy] = useState(false)
   const [proofFile, setProofFile] = useState(null)
   const [proofPreview, setProofPreview] = useState('')
+  const [checkingProof, setCheckingProof] = useState(false)
+  const [proofError, setProofError] = useState('')
   const [transactionId, setTransactionId] = useState('')
   useCartStockSync()
 
@@ -122,15 +125,37 @@ export function PaymentPage() {
   }
   const needsProof = method.requiresProof
 
-  const pickProof = (file) => {
+  const clearProof = () => {
+    if (proofPreview) URL.revokeObjectURL(proofPreview)
+    setProofFile(null)
+    setProofPreview('')
+  }
+
+  // Only a receipt from the chosen method (its name must appear on the screenshot) is accepted.
+  const pickProof = async (input) => {
+    const file = input.files?.[0]
+    input.value = '' // so choosing the same file again re-runs the check
     if (!file) return
+    setProofError('')
     if (!file.type.startsWith('image/')) {
-      push('Please choose a screenshot image (JPG or PNG).', 'error')
+      setProofError('Please choose a screenshot image (JPG or PNG).')
       return
     }
-    if (proofPreview) URL.revokeObjectURL(proofPreview)
-    setProofFile(file)
-    setProofPreview(URL.createObjectURL(file))
+    clearProof()
+    setCheckingProof(true)
+    try {
+      const result = await checkReceipt(file, method.id, method.label, settings)
+      if (!result.ok) {
+        setProofError(result.reason)
+        return
+      }
+      setProofFile(file)
+      setProofPreview(URL.createObjectURL(file))
+    } catch {
+      setProofError('Could not read this screenshot. Please check your internet and try again.')
+    } finally {
+      setCheckingProof(false)
+    }
   }
 
   const placeOrder = async () => {
@@ -147,6 +172,10 @@ export function PaymentPage() {
     const scheduleProblem = draft.deliveryWindow === 'schedule' ? scheduleError(draft.scheduledAt) : ''
     if (scheduleProblem) {
       push(`${scheduleProblem} Go back to checkout to change it.`, 'error')
+      return
+    }
+    if (needsProof && checkingProof) {
+      push('Please wait — we are still checking your screenshot.', 'error')
       return
     }
     if (needsProof && !proofFile) {
@@ -208,7 +237,14 @@ export function PaymentPage() {
                     name="pay"
                     className="sr-only"
                     checked={selected}
-                    onChange={() => update({ paymentMethod: option.id })}
+                    onChange={() => {
+                      // A receipt checked for one method isn't valid for another.
+                      if (option.id !== method.id) {
+                        clearProof()
+                        setProofError('')
+                      }
+                      update({ paymentMethod: option.id })
+                    }}
                   />
                   <span className={`grid h-10 w-10 place-items-center rounded-full ${selected ? 'bg-primary text-black' : 'bg-slate-100'}`}>
                     <Icon className="h-5 w-5" />
@@ -245,14 +281,18 @@ export function PaymentPage() {
                       type="button"
                       aria-label="Remove screenshot"
                       className="absolute top-2 right-2 grid h-8 w-8 place-items-center rounded-full bg-white shadow"
-                      onClick={() => {
-                        URL.revokeObjectURL(proofPreview)
-                        setProofFile(null)
-                        setProofPreview('')
-                      }}
+                      onClick={clearProof}
                     >
                       <X className="h-4 w-4" />
                     </button>
+                  </div>
+                ) : checkingProof ? (
+                  <div
+                    role="status"
+                    className="mt-2 flex flex-col items-center gap-2 rounded-3xl border-2 border-dashed border-primary/50 bg-light-aqua px-4 py-8 text-sm text-primary-dark"
+                  >
+                    <Spinner className="h-6 w-6" />
+                    Checking that this is a {method.id === 'bank' ? 'bank' : method.label} receipt…
                   </div>
                 ) : (
                   <label
@@ -261,9 +301,20 @@ export function PaymentPage() {
                   >
                     <ImagePlus className="h-6 w-6" />
                     Tap to upload screenshot
+                    <span className="text-xs text-slate-400">
+                      Only a {method.id === 'bank' ? 'bank transfer' : method.label} receipt is accepted
+                    </span>
                   </label>
                 )}
-                <input id="proof" type="file" accept="image/*" className="sr-only" onChange={(e) => pickProof(e.target.files?.[0])} />
+                {proofError ? <p className="mt-2 text-sm text-red-600">{proofError}</p> : null}
+                <input
+                  id="proof"
+                  type="file"
+                  accept="image/*"
+                  className="sr-only"
+                  disabled={checkingProof}
+                  onChange={(e) => pickProof(e.target)}
+                />
               </div>
             </div>
           ) : null}

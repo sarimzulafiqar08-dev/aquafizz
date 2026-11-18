@@ -51,6 +51,17 @@ PRODUCTS = {
     'dew-1l': dict(src='dew/user-1l.png', label='1 Litre', share=0.76, tol=18, crop=(420 / 1024, 15 / 572, 620 / 1024, 502 / 572)),
     'dew-1500ml': dict(src='dew/user-1500ml.png', label='1.5 Litre', share=0.83, tol=18, crop=(420 / 1024, 15 / 572, 620 / 1024, 502 / 572)),
     'dew-2500ml': dict(src='dew/user-2500ml.png', label='2.5 Litre', share=0.9, tol=18, crop=(420 / 1024, 15 / 572, 620 / 1024, 502 / 572)),
+    # Bravo
+    # All sizes: studio shots supplied by the store owner, used as-is (square around the bottle).
+    'bravo-tetra-200ml': dict(src='bravo/user-200ml.png', label='200 ml', mode='photo', crop=(226 / 1024, 0, 798 / 1024, 1)),
+    'bravo-300ml': dict(src='bravo/user-300ml.png', label='300 ml', mode='photo', crop=(226 / 1024, 0, 798 / 1024, 1)),
+    'bravo-500ml': dict(src='bravo/user-500ml.png', label='500 ml', mode='photo', crop=(233 / 1024, 0, 791 / 1024, 1)),
+    'bravo-1000ml': dict(src='bravo/user-1000ml.png', label='1 Litre', mode='photo', crop=(233 / 1024, 0, 791 / 1024, 1)),
+    'bravo-1500ml': dict(src='bravo/user-1500ml.png', label='1.5 Litre', mode='photo', crop=(233 / 1024, 0, 791 / 1024, 1)),
+    'bravo-2000ml': dict(src='bravo/user-2000ml.png', label='2 Litre', mode='photo', crop=(233 / 1024, 0, 791 / 1024, 1)),
+    # Sting
+    # Red 500ml: product shot supplied by the store owner (white background), used as-is.
+    'sting-red-500ml': dict(src='sting/user-red-500ml.png', label='500 ml', mode='photo'),
     # Mirinda
     # All Mirinda sizes: studio shots (bottle + glass) supplied by the store owner; square around both.
     'mirinda-345ml': dict(src='mirinda/bottle-345ml-user.png', label='345 ml', mode='photo', crop=(448 / 1024, 0, 1020 / 1024, 1)),
@@ -129,7 +140,7 @@ def pack_of(bottle, count=5):
 THEMES = {
     'pepsi': dict(centre=(246, 251, 255), edge=(176, 212, 240), fruit=False),
     '7up': dict(centre=(244, 252, 247), edge=(178, 222, 198), fruit=True),
-    'dew': dict(centre=(250, 253, 240), edge=(205, 226, 160), fruit=False),
+    'dew': dict(centre=(244, 252, 247), edge=(178, 222, 198), fruit=False),  # same backdrop as 7up
 }
 
 

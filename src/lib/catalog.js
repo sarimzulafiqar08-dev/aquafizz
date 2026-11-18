@@ -24,8 +24,7 @@ export const categories = [
     slug: 'deal-boxes',
     name: 'Deal Boxes',
     description: 'Value packs for gatherings, iftar and family nights.',
-    image:
-      'https://images.unsplash.com/photo-1523362628745-0c100150b504?auto=format&fit=crop&w=900&q=80',
+    image: '/images/categories/deal-boxes.jpg',
   },
 ]
 

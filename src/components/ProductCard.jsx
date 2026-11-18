@@ -53,7 +53,7 @@ export function ProductCard({ product }) {
   }
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-[0_6px_24px_rgb(0_194_209_/_0.08)] transition hover:-translate-y-0.5 hover:shadow-lg sm:rounded-3xl">
+    <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-[0_6px_24px_rgb(19_143_150_/_0.1)] transition hover:-translate-y-0.5 hover:shadow-lg sm:rounded-3xl">
       <Link to={`/products/${product.slug}`} className="relative block aspect-square overflow-hidden bg-slate-50">
         <ProductImage
           src={product.image}
@@ -61,9 +61,6 @@ export function ProductCard({ product }) {
           brand={product.brand}
           className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
         />
-        <span className="absolute bottom-3 left-3 hidden rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium sm:inline">
-          {product.category}
-        </span>
         {/* Heart sits top-left: product photos carry their size badge in the top-right corner. */}
         {out ? (
           <span className="absolute inset-x-0 bottom-0 bg-black/60 py-1 text-center text-xs font-semibold text-white">

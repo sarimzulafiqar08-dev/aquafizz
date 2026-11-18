@@ -13,7 +13,7 @@ import { ProductImage } from '../components/ProductImage'
 export function OrderSummary({ cta, ctaTo, notice }) {
   const { summary, promo, setPromo } = useCart()
   return (
-    <aside className="h-fit rounded-3xl border border-slate-100 bg-white p-5 shadow-[0_8px_30px_rgb(0_194_209_/_0.08)]">
+    <aside className="h-fit rounded-3xl border border-slate-100 bg-white p-5 shadow-[0_8px_30px_rgb(19_143_150_/_0.1)]">
       <h2 className="text-lg font-semibold">Order summary</h2>
       <dl className="mt-4 space-y-2 text-sm">
         <div className="flex justify-between">

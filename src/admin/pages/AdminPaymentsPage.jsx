@@ -327,7 +327,7 @@ export function AdminPaymentsPage() {
   return (
     <div>
       <PageHeader title="Payments" description="Verify online payments and set the accounts customers pay into." />
-      <div role="tablist" aria-label="Payments" className="mb-6 inline-flex rounded-full bg-white p-1 shadow-[0_8px_30px_rgb(0_194_209_/_0.08)]">
+      <div role="tablist" aria-label="Payments" className="mb-6 inline-flex rounded-full bg-white p-1 shadow-[0_8px_30px_rgb(19_143_150_/_0.1)]">
         {TABS.map((t) => (
           <button
             key={t.id}

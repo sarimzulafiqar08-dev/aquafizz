@@ -52,7 +52,7 @@ function Stat({ label, value, icon: Icon, to, loading }) {
       {loading ? <div className="mt-3 h-7 w-20 animate-pulse rounded bg-slate-200" /> : <p className="mt-2 text-2xl font-bold">{value}</p>}
     </>
   )
-  const cls = 'block rounded-3xl border border-slate-100 bg-white p-5 shadow-[0_8px_30px_rgb(0_194_209_/_0.08)]'
+  const cls = 'block rounded-3xl border border-slate-100 bg-white p-5 shadow-[0_8px_30px_rgb(19_143_150_/_0.1)]'
   return to ? (
     <Link to={to} className={`${cls} transition hover:-translate-y-0.5`}>
       {body}
@@ -691,7 +691,7 @@ export function AdminSettingsPage() {
       <div className="grid gap-4">
         <DeliveryAreaSettings />
         <div className="rounded-3xl border border-slate-100 bg-white p-5 text-sm text-slate-600">
-          <p>Theme: AquaFizz primary #00C2D1</p>
+          <p>Theme: Aqua (deep teal #138F96, gold accents)</p>
           <p className="mt-2">
             Data backend: {isSupabaseConfigured ? 'Supabase (live)' : 'Browser storage (local development)'}.
           </p>

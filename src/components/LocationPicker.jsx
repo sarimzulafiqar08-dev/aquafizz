@@ -88,7 +88,7 @@ export default function LocationPicker({ value, onChange, focus, readOnly = fals
           <Polygon
             positions={SINDH_LATLNGS}
             interactive={false}
-            pathOptions={{ color: '#00c2d1', weight: 2, fillColor: '#00c2d1', fillOpacity: 0.06 }}
+            pathOptions={{ color: '#138f96', weight: 2, fillColor: '#138f96', fillOpacity: 0.06 }}
           />
           {!readOnly && hasLocation(value) ? (
             <Marker

@@ -1,8 +1,6 @@
 import { Link } from 'react-router-dom'
 import { categories } from '../lib/catalog'
-import { ProductCard } from '../components/ProductCard'
 import { usePageSeo } from '../hooks/usePageSeo'
-import { useProducts } from '../hooks/useProducts'
 
 function Bubbles() {
   const specs = [
@@ -37,8 +35,6 @@ export function HomePage() {
     description:
       'Cold drinks, mineral water aur juices — ab ghar tak fast delivery ke saath.',
   })
-  const { products } = useProducts()
-  const featured = products.filter((p) => p.featured)
 
   return (
     <div className="space-y-16">
@@ -52,9 +48,7 @@ export function HomePage() {
             <h1 className="mt-3 text-4xl leading-tight font-bold md:text-5xl">
               Thandak Jo Dil Khush Kar De
             </h1>
-            <p className="mt-4 max-w-md text-lg text-slate-600">
-              Cold drinks, mineral water aur juices — ab ghar tak fast delivery ke saath.
-            </p>
+            <p className="mt-4 max-w-md text-lg text-slate-600">Cold drinks, mineral water aur juices.</p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
                 to="/products"
@@ -70,13 +64,14 @@ export function HomePage() {
               </Link>
             </div>
           </div>
-          <div className="relative animate-fade-in">
+          {/* Same 8:5 shape as the collage, so none of its three photos gets cropped; smaller on phones. */}
+          <div className="relative mx-auto w-full max-w-xs animate-fade-in sm:max-w-sm md:max-w-none">
             <img
-              src="https://images.unsplash.com/photo-1629203851122-3726ecdf080e?auto=format&fit=crop&w=1100&q=80"
-              alt="Chilled bottled drinks with condensation"
-              className="h-72 w-full rounded-[2rem] object-cover shadow-xl md:h-[26rem]"
+              src="/images/categories/deal-boxes.jpg"
+              alt="Pepsi can, a glass of water and orange juice"
+              className="aspect-[8/5] w-full rounded-[1.5rem] object-cover shadow-xl md:rounded-[2rem]"
             />
-            <p className="absolute bottom-4 left-4 rounded-2xl bg-white/90 px-4 py-2 text-sm font-medium shadow">
+            <p className="absolute bottom-3 left-3 rounded-2xl bg-white/90 px-3 py-1.5 text-xs font-medium text-teal-deep shadow md:bottom-4 md:left-4 md:px-4 md:py-2 md:text-sm">
               Fast delivery to your door
             </p>
           </div>
@@ -95,7 +90,7 @@ export function HomePage() {
             <Link
               key={cat.slug}
               to={`/products?category=${cat.slug}`}
-              className="group overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-[0_8px_30px_rgb(0_194_209_/_0.08)] sm:rounded-3xl"
+              className="group overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-[0_8px_30px_rgb(19_143_150_/_0.1)] sm:rounded-3xl"
             >
               <img
                 src={cat.image}
@@ -111,20 +106,6 @@ export function HomePage() {
                 </span>
               </div>
             </Link>
-          ))}
-        </div>
-      </section>
-
-      <section>
-        <div className="mb-6 flex items-end justify-between">
-          <h2 className="text-xl font-bold sm:text-2xl">Featured products</h2>
-          <Link to="/products" className="text-sm font-medium text-primary-dark">
-            Shop all
-          </Link>
-        </div>
-        <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-          {featured.map((product) => (
-            <ProductCard key={product.id} product={product} />
           ))}
         </div>
       </section>

@@ -1,12 +1,18 @@
 @import 'tailwindcss';
 
+/* Aqua theme: deep teal + light aqua, gold accents, elegant serif headings. */
 @theme {
-  --color-primary: #00c2d1;
-  --color-primary-dark: #0099a6;
+  --color-primary: #2ec4c7;
+  --color-primary-dark: #0e7f87;
   --color-dark: #000000;
-  --color-light-aqua: #e8fbfd;
+  --color-light-aqua: #e7f7f6;
+  --color-teal-deep: #0b5d66;
+  --color-teal-mid: #138f96;
+  --color-gold: #d8b25e;
   --font-sans: 'Segoe UI', ui-sans-serif, system-ui, sans-serif;
-  --shadow-card: 0 8px 30px rgb(0 194 209 / 0.08);
+  --font-display: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --font-script: 'Great Vibes', 'Segoe Script', cursive;
+  --shadow-card: 0 8px 30px rgb(19 143 150 / 0.1);
 }
 
 html {
@@ -25,8 +31,15 @@ body {
   min-height: 100dvh;
 }
 
+/* Page and section titles use the display serif, like the Aqua theme's headings. */
+h1,
+h2 {
+  font-family: var(--font-display);
+  letter-spacing: 0.01em;
+}
+
 :focus-visible {
-  outline: 2px solid #00c2d1;
+  outline: 2px solid #138f96;
   outline-offset: 2px;
 }
 
