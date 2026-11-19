@@ -329,12 +329,31 @@ export function filterProducts(list, filters) {
   })
 }
 
+/**
+ * Volume of a product in ml, read from its size ("345ml", "1L", "1.5 L", "4 × 1.5 L").
+ * Multipacks (a "Ten Pack" name or "4 × …" size) sort after the single bottles.
+ * Unknown sizes sort last.
+ */
+export function sizeInMl(product) {
+  const size = String(product?.size || '').toLowerCase()
+  const m = size.match(/(\d+(?:\.\d+)?)\s*(ml|ltr|litre|liter|l)\b/)
+  if (!m) return Number.MAX_SAFE_INTEGER
+  let ml = parseFloat(m[1]) * (m[2] === 'ml' ? 1 : 1000)
+  // Packs ("4 × 1.5 L" or a "Ten Pack") always come after the single bottles, smallest pack first.
+  const PACKS_AFTER = 1_000_000
+  const times = size.match(/(\d+)\s*[×x*]/)
+  if (times) return PACKS_AFTER + ml * Number(times[1])
+  if (/ten\s*pack|tenpack/i.test(product?.name || '')) return PACKS_AFTER + ml * 10
+  return ml
+}
+
 export function sortProducts(list, sort) {
   const copy = [...list]
+  // Default order: smallest bottle first (345ml, 500ml, 1L, 1.5L, 2.5L, then packs).
+  if (sort === 'size' || sort === 'featured') copy.sort((a, b) => sizeInMl(a) - sizeInMl(b) || a.name.localeCompare(b.name))
   if (sort === 'price-asc') copy.sort((a, b) => a.price - b.price)
   if (sort === 'price-desc') copy.sort((a, b) => b.price - a.price)
   if (sort === 'name') copy.sort((a, b) => a.name.localeCompare(b.name))
-  if (sort === 'featured') copy.sort((a, b) => Number(b.featured) - Number(a.featured))
   if (sort === 'newest') copy.sort((a, b) => b.createdAt.localeCompare(a.createdAt))
   return copy
 }

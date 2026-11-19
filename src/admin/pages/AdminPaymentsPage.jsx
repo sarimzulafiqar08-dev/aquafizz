@@ -1,4 +1,4 @@
-import { Building2, CheckCircle2, ExternalLink, Smartphone, XCircle } from 'lucide-react'
+import { Banknote, Building2, CheckCircle2, ExternalLink, Smartphone, XCircle } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { EmptyState, ErrorState, FormError, PageHeader, Spinner } from '../../components/Feedback'
 import { Field, inputClass } from '../../components/Field'
@@ -8,17 +8,17 @@ import { useAsync } from '../../hooks/useAsync'
 import { usePageSeo } from '../../hooks/usePageSeo'
 import { PAYMENT_STATUSES } from '../../lib/constants'
 import { formatPKR } from '../../lib/format'
-import { listOrders, updatePaymentStatus } from '../../services/orderService'
+import { listOrders, updateOrderStatus, updatePaymentStatus } from '../../services/orderService'
 import { getPaymentSettings, getProofUrl, savePaymentSettings } from '../../services/paymentService'
 
 const TABS = [
-  { id: 'verify', label: 'Verify payments' },
+  { id: 'verify', label: 'Confirm payments' },
   { id: 'settings', label: 'Payment settings' },
 ]
 
 function PaymentBadge({ status }) {
   const tone =
-    status === PAYMENT_STATUSES.paid
+    status === PAYMENT_STATUSES.paid || status === PAYMENT_STATUSES.codConfirmed
       ? 'bg-emerald-50 text-emerald-700'
       : status === PAYMENT_STATUSES.rejected
         ? 'bg-red-50 text-red-700'
@@ -60,26 +60,46 @@ function VerifyPayments() {
   const [filter, setFilter] = useState(PAYMENT_STATUSES.pending)
   const [busyId, setBusyId] = useState('')
 
-  const online = orders.filter((o) => o.paymentStatus !== PAYMENT_STATUSES.codPending)
-  const visible = filter ? online.filter((o) => o.paymentStatus === filter) : online
-  const counts = Object.fromEntries(
-    [PAYMENT_STATUSES.pending, PAYMENT_STATUSES.paid, PAYMENT_STATUSES.rejected].map((s) => [s, online.filter((o) => o.paymentStatus === s).length]),
-  )
+  // Online payments wait for a screenshot check; Cash on Delivery orders wait for a confirmation.
+  const FILTERS = [
+    { status: PAYMENT_STATUSES.pending, label: 'Online to verify' },
+    { status: PAYMENT_STATUSES.codPending, label: 'COD to confirm' },
+    { status: PAYMENT_STATUSES.paid, label: 'Paid' },
+    { status: PAYMENT_STATUSES.codConfirmed, label: 'COD confirmed' },
+    { status: PAYMENT_STATUSES.rejected, label: 'Rejected' },
+    { status: '', label: 'All' },
+  ]
+  const visible = filter ? orders.filter((o) => o.paymentStatus === filter) : orders
+  const count = (status) => (status ? orders.filter((o) => o.paymentStatus === status).length : orders.length)
+  const isCod = (o) =>
+    (o.payment?.method || '') === 'cod' ||
+    o.paymentStatus === PAYMENT_STATUSES.codPending ||
+    o.paymentStatus === PAYMENT_STATUSES.codConfirmed
 
   const review = async (order, status) => {
     if (status === PAYMENT_STATUSES.rejected) {
       const ok = await confirm({
-        title: `Reject payment for ${order.id}?`,
-        message: 'Use this when the money did not arrive or the screenshot is not valid. Contact the customer before cancelling the order.',
-        confirmLabel: 'Reject payment',
+        title: isCod(order) ? `Reject COD order ${order.id}?` : `Reject payment for ${order.id}?`,
+        message: isCod(order)
+          ? 'Use this when the order looks fake or the customer cannot be reached. Cancel the order from Orders afterwards.'
+          : 'Use this when the money did not arrive or the screenshot is not valid. Contact the customer before cancelling the order.',
+        confirmLabel: 'Reject',
       })
       if (!ok) return
     }
     setBusyId(order.id)
     try {
-      const updated = await updatePaymentStatus(order.id, status)
+      let updated = await updatePaymentStatus(order.id, status)
+      // Confirming a payment (or a COD order) also confirms a freshly placed order, so the
+      // customer sees "Confirmed" on their order page.
+      const confirming = status === PAYMENT_STATUSES.paid || status === PAYMENT_STATUSES.codConfirmed
+      if (confirming && updated.status === 'Placed') updated = await updateOrderStatus(order.id, 'Confirmed')
       setOrders((list) => list.map((o) => (o.id === updated.id ? updated : o)))
-      push(`${order.id}: payment ${status.toLowerCase()}`)
+      push(
+        status === PAYMENT_STATUSES.codConfirmed
+          ? `${order.id}: COD order confirmed — the customer can see it now`
+          : `${order.id}: payment ${status.toLowerCase()}`,
+      )
     } catch (err) {
       push(err.message, 'error')
     } finally {
@@ -90,16 +110,16 @@ function VerifyPayments() {
   return (
     <div>
       <div className="mb-4 flex gap-2 overflow-x-auto pb-1">
-        {[PAYMENT_STATUSES.pending, PAYMENT_STATUSES.paid, PAYMENT_STATUSES.rejected, ''].map((s) => (
+        {FILTERS.map((f) => (
           <button
-            key={s || 'all'}
+            key={f.status || 'all'}
             type="button"
             className={`whitespace-nowrap rounded-full px-3 py-2 text-xs font-medium ${
-              filter === s ? 'bg-primary text-black' : 'border border-slate-200 bg-white text-slate-600'
+              filter === f.status ? 'bg-primary text-black' : 'border border-slate-200 bg-white text-slate-600'
             }`}
-            onClick={() => setFilter(s)}
+            onClick={() => setFilter(f.status)}
           >
-            {s || 'All online payments'} ({s ? counts[s] : online.length})
+            {f.label} ({count(f.status)})
           </button>
         ))}
       </div>
@@ -113,8 +133,10 @@ function VerifyPayments() {
         <ErrorState description={error} onRetry={reload} />
       ) : visible.length === 0 ? (
         <EmptyState
-          title={filter === PAYMENT_STATUSES.pending ? 'Nothing to verify' : 'No payments here'}
-          description="JazzCash, Easypaisa and bank transfer payments appear here with their screenshots."
+          title={
+            filter === PAYMENT_STATUSES.pending || filter === PAYMENT_STATUSES.codPending ? 'Nothing to confirm' : 'No orders here'
+          }
+          description="Online payments appear here with their screenshots; Cash on Delivery orders appear under COD to confirm."
         />
       ) : (
         <ul className="space-y-3">
@@ -122,7 +144,18 @@ function VerifyPayments() {
             const p = o.payment || {}
             return (
               <li key={o.id} className="grid gap-4 rounded-3xl border border-slate-100 bg-white p-4 sm:grid-cols-[10rem_1fr]">
-                <ProofImage proof={p.proof} />
+                {isCod(o) ? (
+                  <div className="grid h-56 w-40 place-items-center rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-3 text-center text-xs text-slate-500">
+                    <span>
+                      <Banknote className="mx-auto mb-2 h-8 w-8 text-emerald-600" />
+                      Cash on Delivery
+                      <br />
+                      No screenshot needed
+                    </span>
+                  </div>
+                ) : (
+                  <ProofImage proof={p.proof} />
+                )}
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
                     <p className="font-semibold">{o.id}</p>
@@ -137,10 +170,17 @@ function VerifyPayments() {
                       <dt className="text-xs text-slate-500">Method</dt>
                       <dd className="font-medium">{o.paymentMethod}</dd>
                     </div>
-                    <div>
-                      <dt className="text-xs text-slate-500">Transaction ID</dt>
-                      <dd className="font-mono font-medium break-all">{p.transactionId || '—'}</dd>
-                    </div>
+                    {isCod(o) ? (
+                      <div>
+                        <dt className="text-xs text-slate-500">Deliver to</dt>
+                        <dd className="break-words">{[o.delivery?.address, o.delivery?.area].filter(Boolean).join(', ')}</dd>
+                      </div>
+                    ) : (
+                      <div>
+                        <dt className="text-xs text-slate-500">Transaction ID</dt>
+                        <dd className="font-mono font-medium break-all">{p.transactionId || '—'}</dd>
+                      </div>
+                    )}
                     <div>
                       <dt className="text-xs text-slate-500">Customer</dt>
                       <dd>
@@ -159,7 +199,18 @@ function VerifyPayments() {
                     ) : null}
                   </dl>
                   <div className="mt-4 flex flex-wrap gap-2">
-                    {o.paymentStatus !== PAYMENT_STATUSES.paid ? (
+                    {o.paymentStatus === PAYMENT_STATUSES.codPending ? (
+                      <button
+                        type="button"
+                        disabled={busyId === o.id}
+                        className="inline-flex items-center gap-1.5 rounded-full bg-emerald-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
+                        onClick={() => review(o, PAYMENT_STATUSES.codConfirmed)}
+                      >
+                        {busyId === o.id ? <Spinner /> : <CheckCircle2 className="h-4 w-4" />}
+                        Confirm COD order
+                      </button>
+                    ) : null}
+                    {o.paymentStatus !== PAYMENT_STATUSES.paid && o.paymentStatus !== PAYMENT_STATUSES.codPending ? (
                       <button
                         type="button"
                         disabled={busyId === o.id}
@@ -167,7 +218,7 @@ function VerifyPayments() {
                         onClick={() => review(o, PAYMENT_STATUSES.paid)}
                       >
                         {busyId === o.id ? <Spinner /> : <CheckCircle2 className="h-4 w-4" />}
-                        Mark as paid
+                        {isCod(o) ? 'Cash received' : 'Mark as paid'}
                       </button>
                     ) : null}
                     {o.paymentStatus !== PAYMENT_STATUSES.rejected ? (
@@ -326,7 +377,10 @@ export function AdminPaymentsPage() {
   const [tab, setTab] = useState('verify')
   return (
     <div>
-      <PageHeader title="Payments" description="Verify online payments and set the accounts customers pay into." />
+      <PageHeader
+        title="Payments"
+        description="Verify online payments, confirm Cash on Delivery orders and set the accounts customers pay into."
+      />
       <div role="tablist" aria-label="Payments" className="mb-6 inline-flex rounded-full bg-white p-1 shadow-[0_8px_30px_rgb(19_143_150_/_0.1)]">
         {TABS.map((t) => (
           <button

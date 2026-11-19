@@ -62,6 +62,28 @@ PRODUCTS = {
     # Sting
     # Red 500ml: product shot supplied by the store owner (white background), used as-is.
     'sting-red-500ml': dict(src='sting/user-red-500ml.png', label='500 ml', mode='photo'),
+    # Quice
+    # Store-owner studio shots (all labelled 1000 ml); the badge shows the size the store sells.
+    'quice-lichi-1500ml': dict(src='quice/user-lichi.png', label='1 Litre', share=0.76, tol=12, crop=(410 / 1024, 15 / 572, 625 / 1024, 503 / 572)),
+    'quice-apple-1500ml': dict(src='quice/user-apple.png', label='1.5 Litre', share=0.83, tol=12, crop=(410 / 1024, 15 / 572, 625 / 1024, 503 / 572)),
+    'quice-anar-1500ml': dict(src='quice/user-anar.png', label='1.5 Litre', share=0.83, tol=12, crop=(410 / 1024, 15 / 572, 625 / 1024, 503 / 572)),
+    'quice-cola-1l': dict(src='quice/user-cola.png', label='1 Litre', share=0.76, tol=12, crop=(410 / 1024, 15 / 572, 625 / 1024, 503 / 572)),
+    'quice-cola-1500ml': dict(src='quice/user-cola.png', label='1.5 Litre', share=0.83, tol=12, crop=(410 / 1024, 15 / 572, 625 / 1024, 503 / 572)),
+    # Gormy Cola
+    # Store-owner kitchen shots (bottle + glass), used as-is: square around both, plus badge.
+    'gormy-cola-300ml': dict(src='gormy/user-300ml.png', label='300 ml', mode='photo', crop=(308 / 1024, 0, 880 / 1024, 1)),
+    'gormy-cola-500ml': dict(src='gormy/user-500ml.jpg', label='500 ml', mode='photo', crop=(308 / 1024, 0, 880 / 1024, 1)),
+    'gormy-cola-1l': dict(src='gormy/user-1l.png', label='1 Litre', mode='photo', crop=(315 / 1024, 0, 873 / 1024, 1)),
+    'gormy-cola-1500ml': dict(src='gormy/user-1500ml.png', label='1.5 Litre', mode='photo', crop=(308 / 1024, 0, 880 / 1024, 1)),
+    'gormy-cola-2500ml': dict(src='gormy/user-2500ml.png', label='2.5 Litre', mode='photo', crop=(308 / 1024, 0, 880 / 1024, 1)),
+    # Aquafina
+    # Store-owner shots on a plain white table, used as-is (square around the bottle).
+    'aquafina-340ml': dict(src='aquafina/user-340ml.png', label='340 ml', mode='photo', crop=(228 / 1024, 0, 800 / 1024, 1)),
+    'aquafina-1500ml': dict(src='aquafina/user-big.png', label='1.5 Litre', mode='photo', crop=(228 / 1024, 0, 800 / 1024, 1)),
+    # D-Nova Water
+    # Store-owner shots on a plain white table, used as-is (square around the bottle).
+    'd-nova-water-500ml': dict(src='nova/user-500ml.png', label='500 ml', mode='photo', crop=(228 / 1024, 0, 800 / 1024, 1)),
+    'd-nova-water-1500ml': dict(src='nova/user-1500ml.png', label='1.5 Litre', mode='photo', crop=(228 / 1024, 0, 800 / 1024, 1)),
     # Mirinda
     # All Mirinda sizes: studio shots (bottle + glass) supplied by the store owner; square around both.
     'mirinda-345ml': dict(src='mirinda/bottle-345ml-user.png', label='345 ml', mode='photo', crop=(448 / 1024, 0, 1020 / 1024, 1)),
@@ -141,6 +163,7 @@ THEMES = {
     'pepsi': dict(centre=(246, 251, 255), edge=(176, 212, 240), fruit=False),
     '7up': dict(centre=(244, 252, 247), edge=(178, 222, 198), fruit=True),
     'dew': dict(centre=(244, 252, 247), edge=(178, 222, 198), fruit=False),  # same backdrop as 7up
+    'quice': dict(centre=(244, 252, 247), edge=(178, 222, 198), fruit=False),  # same backdrop as 7up
 }
 
 

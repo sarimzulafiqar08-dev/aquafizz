@@ -3,6 +3,7 @@ import { EmptyState, ErrorState, PageHeader, Spinner } from '../components/Feedb
 import { useAuth } from '../context/AuthContext'
 import { useAsync } from '../hooks/useAsync'
 import { usePageSeo } from '../hooks/usePageSeo'
+import { PaymentStatusBadge, PaymentStatusBox } from '../components/PaymentStatus'
 import { formatPKR } from '../lib/format'
 import { getOrder, listMyOrders } from '../services/orderService'
 
@@ -53,6 +54,9 @@ export function OrdersPage() {
               <p className="mt-1 text-sm text-slate-600">
                 {formatPKR(order.totals.total)} · {order.paymentMethod}
               </p>
+              <div className="mt-2">
+                <PaymentStatusBadge status={order.paymentStatus} />
+              </div>
               <Link to={`/orders/${order.id}`} className="mt-3 inline-block text-sm font-medium text-primary-dark">
                 View details
               </Link>
@@ -83,8 +87,10 @@ export function OrderDetailPage() {
   return (
     <div>
       <PageHeader title={order.id} description={order.status} />
+      <div className="mb-4">
+        <PaymentStatusBox status={order.paymentStatus} method={order.paymentMethod} />
+      </div>
       <div className="rounded-3xl border border-slate-100 p-5 text-sm">
-        <p><strong>Payment:</strong> {order.paymentMethod} · {order.paymentStatus}</p>
         <p className="mt-2"><strong>ETA:</strong> {order.estimatedDelivery}</p>
         <p className="mt-2">
           <strong>Address:</strong> {order.delivery.address}, {order.delivery.area}, {order.delivery.city}

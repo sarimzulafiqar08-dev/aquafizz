@@ -102,7 +102,9 @@ export function AdminDashboardPage() {
   const live = orders.filter((o) => o.status !== 'Cancelled')
   const revenue = live.reduce((sum, o) => sum + (o.totals?.total || 0), 0)
   const lowStock = products.filter((p) => p.stock <= 10).sort((a, b) => a.stock - b.stock)
-  const toVerify = orders.filter((o) => o.paymentStatus === PAYMENT_STATUSES.pending).length
+  const toVerify = orders.filter(
+    (o) => o.paymentStatus === PAYMENT_STATUSES.pending || o.paymentStatus === PAYMENT_STATUSES.codPending,
+  ).length
 
   return (
     <div>
@@ -113,7 +115,7 @@ export function AdminDashboardPage() {
           className="mb-4 flex items-center justify-between gap-3 rounded-3xl bg-amber-50 px-5 py-4 text-sm font-medium text-amber-800"
         >
           <span>
-            {toVerify} online {toVerify === 1 ? 'payment is' : 'payments are'} waiting for verification
+            {toVerify} {toVerify === 1 ? 'order is' : 'orders are'} waiting for payment / COD confirmation
           </span>
           <span className="whitespace-nowrap underline">Review now</span>
         </Link>

@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { EmptyState, PageHeader } from '../components/Feedback'
 import { usePageSeo } from '../hooks/usePageSeo'
 import { CONTACT } from '../lib/constants'
+import { PaymentStatusBadge } from '../components/PaymentStatus'
 import { formatPKR } from '../lib/format'
 import { getLocalOrder } from '../services/orderService'
 
@@ -40,7 +41,9 @@ export function OrderSuccessPage() {
         <p><strong>Order number:</strong> {order.id}</p>
         <p className="mt-2"><strong>Total:</strong> {formatPKR(order.totals.total)}</p>
         <p className="mt-2"><strong>Payment method:</strong> {order.paymentMethod}</p>
-        <p className="mt-2"><strong>Payment status:</strong> {order.paymentStatus}</p>
+        <p className="mt-2 flex flex-wrap items-center gap-2">
+          <strong>Payment status:</strong> <PaymentStatusBadge status={order.paymentStatus} />
+        </p>
         <p className="mt-2"><strong>Delivery address:</strong> {address}</p>
         <p className="mt-2"><strong>Estimated delivery:</strong> {order.estimatedDelivery}</p>
       </div>

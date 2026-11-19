@@ -17,7 +17,7 @@ export { PROVINCE, DISTRICT_NAMES as DISTRICTS } from './sindh'
 
 export const DELIVERY_WINDOWS = [
   { id: 'asap', label: 'ASAP', hint: 'Fastest available slot' },
-  { id: '30-60', label: '30–60 Minutes', hint: 'Standard delivery' },
+  { id: '30-60', label: '2–3 Days', hint: 'Standard delivery' }, // id kept for saved checkout drafts
   { id: '1-2', label: '1–2 Hours', hint: 'Flexible window' },
   { id: 'evening', label: 'Today Evening', hint: '6:00 PM – 10:00 PM' },
   { id: 'schedule', label: 'Schedule Delivery', hint: 'Pick a later time' },
@@ -41,10 +41,41 @@ export const DEFAULT_PAYMENT_SETTINGS = {
 
 export const PAYMENT_STATUSES = {
   codPending: 'Pending (COD)',
+  codConfirmed: 'COD confirmed',
   pending: 'Pending verification',
   paid: 'Paid',
   rejected: 'Rejected',
   refunded: 'Refunded',
+}
+
+/** What a customer sees for each payment status: a short label, a colour and a one-line note. */
+export const PAYMENT_STATUS_INFO = {
+  [PAYMENT_STATUSES.codPending]: {
+    label: 'Waiting for confirmation',
+    tone: 'amber',
+    note: 'We will confirm your Cash on Delivery order shortly.',
+  },
+  [PAYMENT_STATUSES.codConfirmed]: {
+    label: 'Order confirmed',
+    tone: 'emerald',
+    note: 'Confirmed by AquaFizz — please keep the cash ready for the rider.',
+  },
+  [PAYMENT_STATUSES.pending]: {
+    label: 'Checking your payment',
+    tone: 'amber',
+    note: 'Our team is verifying your payment screenshot.',
+  },
+  [PAYMENT_STATUSES.paid]: {
+    label: 'Payment confirmed',
+    tone: 'emerald',
+    note: 'Your payment was received and your order is confirmed.',
+  },
+  [PAYMENT_STATUSES.rejected]: {
+    label: 'Payment not accepted',
+    tone: 'red',
+    note: 'We could not verify this payment. Please contact us on WhatsApp.',
+  },
+  [PAYMENT_STATUSES.refunded]: { label: 'Refunded', tone: 'slate', note: 'This payment was refunded.' },
 }
 
 export const PROMO_CODES = {
@@ -111,7 +142,7 @@ export const ORDER_STATUSES = ['Placed', 'Confirmed', 'Out for delivery', 'Deliv
 export const MAX_PRODUCT_IMAGES = 6
 
 export const SORT_OPTIONS = [
-  { id: 'featured', label: 'Featured' },
+  { id: 'featured', label: 'Size: Small to Large' },
   { id: 'price-asc', label: 'Price: Low to High' },
   { id: 'price-desc', label: 'Price: High to Low' },
   { id: 'name', label: 'Name A–Z' },

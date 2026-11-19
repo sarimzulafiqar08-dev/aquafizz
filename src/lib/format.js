@@ -40,7 +40,7 @@ export function estimateDelivery(windowId, scheduledAt) {
     case 'asap':
       return '25–45 minutes'
     case '30-60':
-      return '30–60 minutes'
+      return '2–3 days'
     case '1-2':
       return '1–2 hours'
     case 'evening':
@@ -52,6 +52,6 @@ export function estimateDelivery(windowId, scheduledAt) {
         : 'As scheduled'
     }
     default:
-      return '30–60 minutes'
+      return '2–3 days'
   }
 }
