@@ -5,7 +5,7 @@ import { FormError, PageHeader, Spinner } from '../components/Feedback'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { usePageSeo } from '../hooks/usePageSeo'
-import { DISTRICTS, PROVINCE } from '../lib/constants'
+import { AREAS, CITY } from '../lib/constants'
 import { addressError, cnicError, formatCnic, lettersOnly, nameError, normalizePhone, phoneError } from '../lib/validation'
 import { requestPasswordReset, resetPassword, usesSupabaseAuth } from '../services/authService'
 import { setNewPassword } from '../services/authSupabase'
@@ -101,7 +101,7 @@ export function SignupPage() {
     lastName: nameError(form.lastName, 'Last name'),
     phone: phoneError(form.phone),
     cnic: cnicError(form.cnic),
-    area: DISTRICTS.includes(form.area) ? '' : 'Please choose your district.',
+    area: AREAS.includes(form.area) ? '' : 'Please choose your area.',
     address: addressError(form.address),
     confirm: form.confirm && form.confirm !== form.password ? 'Passwords do not match.' : '',
   }
@@ -230,13 +230,13 @@ export function SignupPage() {
           />
         </Field>
         <div className="grid grid-cols-2 gap-3">
-          <Field id="province" label="Province">
-            <input id="province" readOnly className={`${inputClass} bg-slate-50`} value={PROVINCE} />
+          <Field id="province" label="City">
+            <input id="province" readOnly className={`${inputClass} bg-slate-50`} value={CITY} />
           </Field>
-          <Field id="area" label="District" hint={show('area') ? <span className="text-red-600">{show('area')}</span> : null}>
+          <Field id="area" label="Area" hint={show('area') ? <span className="text-red-600">{show('area')}</span> : null}>
             <select id="area" required className={inputClass} value={form.area} onChange={set('area')} onBlur={blur('area')}>
-              <option value="">Select district</option>
-              {DISTRICTS.map((d) => (
+              <option value="">Select area</option>
+              {AREAS.map((d) => (
                 <option key={d} value={d}>{d}</option>
               ))}
             </select>

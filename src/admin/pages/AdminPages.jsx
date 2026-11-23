@@ -10,7 +10,8 @@ import { useToast } from '../../context/ToastContext'
 import { usePageSeo } from '../../hooks/usePageSeo'
 import { useProducts } from '../../hooks/useProducts'
 import { categories } from '../../lib/catalog'
-import { DISTRICTS, ORDER_STATUSES, PAYMENT_STATUSES, ROLES } from '../../lib/constants'
+import { AREAS, ORDER_STATUSES, PAYMENT_STATUSES, ROLES } from '../../lib/constants'
+import { DELIVERY_RADIUS_KM } from '../../lib/hyderabad'
 import { formatPKR } from '../../lib/format'
 import { deleteUser, listUsers, setUserRole } from '../../services/authService'
 import { useAsync } from '../../hooks/useAsync'
@@ -674,9 +675,10 @@ export function AdminAnalyticsPage() {
 function DeliveryAreaSettings() {
   return (
     <section className="rounded-3xl border border-slate-100 bg-white p-5">
-      <h2 className="text-lg font-semibold">Delivery area: all of Sindh</h2>
+      <h2 className="text-lg font-semibold">Delivery area: Hyderabad</h2>
       <p className="mt-1 text-sm text-slate-600">
-        Customers choose one of Sindh&apos;s {DISTRICTS.length} districts and pin their location anywhere inside the province.
+        Customers choose one of Hyderabad&apos;s {AREAS.length} main areas and pin their location within{' '}
+        {DELIVERY_RADIUS_KM} km of the shop (the circle on the map).
       </p>
       <div className="mt-4">
         <LazyLocationPicker readOnly height="h-96" />

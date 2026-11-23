@@ -1,6 +1,6 @@
 import { DEMO_ADMIN, ROLES, STORAGE_KEYS } from '../lib/constants'
 import { createId, readJson, wait, writeJson } from '../lib/storage'
-import { DISTRICTS } from '../lib/constants'
+import { AREAS } from '../lib/constants'
 import { addressError, cleanName, cnicError, formatCnic, nameError, normalizePhone, phoneError } from '../lib/validation'
 import * as remote from './authSupabase'
 import { supabase } from './supabaseClient'
@@ -80,7 +80,7 @@ export function validateSignup({ firstName, lastName, email, phone, cnic, area, 
     (!/^\S+@\S+\.\S+$/.test(normalizeEmail(email)) ? 'Please enter a valid email.' : '') ||
     phoneError(phone) ||
     cnicError(cnic) ||
-    (!DISTRICTS.includes(area) ? 'Please choose your district.' : '') ||
+    (!AREAS.includes(area) ? 'Please choose your area.' : '') ||
     addressError(address)
   if (problem) throw new Error(problem)
   assertPassword(password)

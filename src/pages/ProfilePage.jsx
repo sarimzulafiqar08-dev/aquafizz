@@ -8,8 +8,8 @@ import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { useWishlist } from '../context/WishlistContext'
 import { usePageSeo } from '../hooks/usePageSeo'
-import { DISTRICTS, PROVINCE } from '../lib/constants'
-import { findDistrict } from '../lib/sindh'
+import { AREAS, CITY } from '../lib/constants'
+import { findArea } from '../lib/hyderabad'
 import { formatPKR } from '../lib/format'
 import { useAsync } from '../hooks/useAsync'
 import { lettersOnly, normalizePhone } from '../lib/validation'
@@ -24,7 +24,7 @@ function DetailsForm() {
     name: user.name || '',
     phone: user.phone || '',
     address: user.address || '',
-    area: DISTRICTS.includes(user.area) ? user.area : '',
+    area: AREAS.includes(user.area) ? user.area : '',
     location: user.location || null,
   })
   const [busy, setBusy] = useState(false)
@@ -46,7 +46,7 @@ function DetailsForm() {
       onSubmit={async (e) => {
         e.preventDefault()
         if (form.location && !isDeliverable(form.location)) {
-          setError('Your pin is outside Sindh. We only deliver within Sindh.')
+          setError('Your pin is outside our Hyderabad delivery area.')
           return
         }
         setBusy(true)
@@ -89,21 +89,21 @@ function DetailsForm() {
             onChange={set('phone', normalizePhone)}
           />
         </Field>
-        <Field id="profile-province" label="Province">
-          <input id="profile-province" readOnly className={`${inputClass} bg-slate-50`} value={PROVINCE} />
+        <Field id="profile-province" label="City">
+          <input id="profile-province" readOnly className={`${inputClass} bg-slate-50`} value={CITY} />
         </Field>
-        <Field id="profile-area" label="District">
+        <Field id="profile-area" label="Area">
           <select
             id="profile-area"
             className={inputClass}
             value={form.area}
             onChange={(e) => {
               setForm((f) => ({ ...f, area: e.target.value }))
-              setFocus(findDistrict(e.target.value))
+              setFocus(findArea(e.target.value))
             }}
           >
-            <option value="">Select district</option>
-            {DISTRICTS.map((d) => (
+            <option value="">Select area</option>
+            {AREAS.map((d) => (
               <option key={d} value={d}>{d}</option>
             ))}
           </select>

@@ -1,12 +1,12 @@
 import { Heart, Minus, Plus } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { maxFor, useCart } from '../context/CartContext'
+import { MAX_PER_ITEM, maxFor, useCart } from '../context/CartContext'
 import { useToast } from '../context/ToastContext'
 import { useWishlist } from '../context/WishlistContext'
 import { formatPKR, stockLabel } from '../lib/format'
 import { ProductImage } from './ProductImage'
 
-export function QuantitySelector({ value, onChange, min = 1, max = 20, disabled, compact = false, className = '' }) {
+export function QuantitySelector({ value, onChange, min = 1, max = MAX_PER_ITEM, disabled, compact = false, className = '' }) {
   const btn = compact ? 'h-8 w-8' : 'h-9 w-9'
   return (
     <div className={`inline-flex items-center justify-between rounded-full border border-slate-200 ${className}`}>

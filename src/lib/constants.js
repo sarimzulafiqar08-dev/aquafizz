@@ -8,12 +8,12 @@ export const CONTACT = {
   phone: import.meta.env.VITE_SUPPORT_PHONE || '+923020085811',
   whatsapp: import.meta.env.VITE_WHATSAPP_NUMBER || '923022666385',
   email: import.meta.env.VITE_SUPPORT_EMAIL || 'hello@aquafizz.pk',
-  address: 'Shop 12, Block 13-C, Gulshan-e-Iqbal, Karachi',
+  address: 'Saddar, Hyderabad, Sindh',
   hours: 'Daily 10:00 AM – 10:00 PM',
 }
 
-// Delivery covers the whole of Sindh; districts and boundary live in lib/sindh.js.
-export { PROVINCE, DISTRICT_NAMES as DISTRICTS } from './sindh'
+// Delivery covers Hyderabad city; its areas and delivery zone live in lib/hyderabad.js.
+export { CITY, AREA_NAMES as AREAS } from './hyderabad'
 
 export const DELIVERY_WINDOWS = [
   { id: 'asap', label: 'ASAP', hint: 'Fastest available slot' },
@@ -96,6 +96,10 @@ export function brandRank(brand) {
   if (last !== -1) return 1000 + last
   return 500
 }
+
+// Cash on Delivery is only offered up to this order total; bigger orders are paid in advance.
+// Keep in sync with place_order() in supabase/migrations/*_hyderabad_delivery_area.sql.
+export const COD_MAX_TOTAL = 10000
 
 export const DELIVERY_FEE = 149
 export const FREE_DELIVERY_MIN = 2500

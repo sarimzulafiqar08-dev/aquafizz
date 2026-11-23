@@ -10,10 +10,9 @@ import { useToast } from '../context/ToastContext'
 import { useAsync } from '../hooks/useAsync'
 import { useCartStockSync } from '../hooks/useCartStockSync'
 import { usePageSeo } from '../hooks/usePageSeo'
-import { CONTACT, PAYMENT_METHODS, PAYMENT_STATUSES } from '../lib/constants'
+import { COD_MAX_TOTAL, CONTACT, PAYMENT_METHODS, PAYMENT_STATUSES } from '../lib/constants'
 import { estimateDelivery, formatPKR, scheduleError } from '../lib/format'
 import { placeOrder as placeOrderRequest } from '../services/orderService'
-import { checkReceipt } from '../lib/receiptCheck'
 import { getPaymentSettings, isMethodReady, uploadPaymentProof } from '../services/paymentService'
 import { OrderSummary } from './CartPage'
 
@@ -86,7 +85,6 @@ export function PaymentPage() {
   const [busy, setBusy] = useState(false)
   const [proofFile, setProofFile] = useState(null)
   const [proofPreview, setProofPreview] = useState('')
-  const [checkingProof, setCheckingProof] = useState(false)
   const [proofError, setProofError] = useState('')
   const [transactionId, setTransactionId] = useState('')
   useCartStockSync()
@@ -113,13 +111,20 @@ export function PaymentPage() {
   if (error) return <ErrorState title="Could not load payment options" description={error} onRetry={reload} />
 
   const available = PAYMENT_METHODS.filter((m) => isMethodReady(settings, m.id))
-  const method = available.find((m) => m.id === draft.paymentMethod) || available[0]
+  // Cash on Delivery only up to COD_MAX_TOTAL; above that the order must be paid in advance.
+  const codBlocked = summary.total > COD_MAX_TOTAL
+  const selectable = available.filter((m) => !(m.id === 'cod' && codBlocked))
+  const method = selectable.find((m) => m.id === draft.paymentMethod) || selectable[0]
 
   if (!method) {
     return (
       <ErrorState
-        title="Payments are temporarily unavailable"
-        description={`Please contact us on WhatsApp (${CONTACT.whatsapp}) to complete your order.`}
+        title={codBlocked ? 'Advance payment needed' : 'Payments are temporarily unavailable'}
+        description={
+          codBlocked
+            ? `Orders above ${formatPKR(COD_MAX_TOTAL)} must be paid in advance, but online payment isn't set up yet. Please contact us on WhatsApp (${CONTACT.whatsapp}) to complete your order.`
+            : `Please contact us on WhatsApp (${CONTACT.whatsapp}) to complete your order.`
+        }
       />
     )
   }
@@ -131,10 +136,10 @@ export function PaymentPage() {
     setProofPreview('')
   }
 
-  // Only a receipt from the chosen method (its name must appear on the screenshot) is accepted.
-  const pickProof = async (input) => {
+  // Any image is accepted here; the admin checks the screenshot on the Payments page.
+  const pickProof = (input) => {
     const file = input.files?.[0]
-    input.value = '' // so choosing the same file again re-runs the check
+    input.value = '' // so choosing the same file again still triggers onChange
     if (!file) return
     setProofError('')
     if (!file.type.startsWith('image/')) {
@@ -142,25 +147,17 @@ export function PaymentPage() {
       return
     }
     clearProof()
-    setCheckingProof(true)
-    try {
-      const result = await checkReceipt(file, method.id, method.label, settings)
-      if (!result.ok) {
-        setProofError(result.reason)
-        return
-      }
-      setProofFile(file)
-      setProofPreview(URL.createObjectURL(file))
-    } catch {
-      setProofError('Could not read this screenshot. Please check your internet and try again.')
-    } finally {
-      setCheckingProof(false)
-    }
+    setProofFile(file)
+    setProofPreview(URL.createObjectURL(file))
   }
 
   const placeOrder = async () => {
     if (!navigator.onLine) {
       push('Aap offline hain. Internet on karke dobara "Place order" dabayein — aap ka cart mehfooz hai.', 'error')
+      return
+    }
+    if (method.id === 'cod' && codBlocked) {
+      push(`Cash on Delivery is available up to ${formatPKR(COD_MAX_TOTAL)}. Please pay in advance.`, 'error')
       return
     }
     if (summary.unavailable.length) {
@@ -172,10 +169,6 @@ export function PaymentPage() {
     const scheduleProblem = draft.deliveryWindow === 'schedule' ? scheduleError(draft.scheduledAt) : ''
     if (scheduleProblem) {
       push(`${scheduleProblem} Go back to checkout to change it.`, 'error')
-      return
-    }
-    if (needsProof && checkingProof) {
-      push('Please wait — we are still checking your screenshot.', 'error')
       return
     }
     if (needsProof && !proofFile) {
@@ -221,10 +214,36 @@ export function PaymentPage() {
       />
       <div className="grid gap-6 lg:grid-cols-[1fr_20rem]">
         <div className="space-y-5">
+          {codBlocked ? (
+            <div role="note" className="rounded-3xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+              <p className="font-semibold">Advance payment required for orders above {formatPKR(COD_MAX_TOTAL)}</p>
+              <p className="mt-1">
+                Your total is {formatPKR(summary.total)}, so Cash on Delivery isn&apos;t available. Please pay in advance
+                with JazzCash, Easypaisa or bank transfer and upload the payment screenshot.
+              </p>
+            </div>
+          ) : null}
           <div className="grid gap-3 sm:grid-cols-2">
             {available.map((option) => {
               const Icon = ICONS[option.id]
               const selected = method.id === option.id
+              if (option.id === 'cod' && codBlocked) {
+                return (
+                  <div
+                    key={option.id}
+                    aria-disabled="true"
+                    className="flex items-center gap-3 rounded-3xl border border-dashed border-slate-200 bg-slate-50 p-4 opacity-70"
+                  >
+                    <span className="grid h-10 w-10 place-items-center rounded-full bg-slate-100 text-slate-400">
+                      <Icon className="h-5 w-5" />
+                    </span>
+                    <span>
+                      <span className="block font-semibold text-slate-500 line-through">{option.label}</span>
+                      <span className="text-xs text-slate-500">Only for orders up to {formatPKR(COD_MAX_TOTAL)}</span>
+                    </span>
+                  </div>
+                )
+              }
               return (
                 <label
                   key={option.id}
@@ -286,14 +305,6 @@ export function PaymentPage() {
                       <X className="h-4 w-4" />
                     </button>
                   </div>
-                ) : checkingProof ? (
-                  <div
-                    role="status"
-                    className="mt-2 flex flex-col items-center gap-2 rounded-3xl border-2 border-dashed border-primary/50 bg-light-aqua px-4 py-8 text-sm text-primary-dark"
-                  >
-                    <Spinner className="h-6 w-6" />
-                    Checking that this is a {method.id === 'bank' ? 'bank' : method.label} receipt…
-                  </div>
                 ) : (
                   <label
                     htmlFor="proof"
@@ -301,9 +312,6 @@ export function PaymentPage() {
                   >
                     <ImagePlus className="h-6 w-6" />
                     Tap to upload screenshot
-                    <span className="text-xs text-slate-400">
-                      Only a {method.id === 'bank' ? 'bank transfer' : method.label} receipt is accepted
-                    </span>
                   </label>
                 )}
                 {proofError ? <p className="mt-2 text-sm text-red-600">{proofError}</p> : null}
@@ -312,7 +320,6 @@ export function PaymentPage() {
                   type="file"
                   accept="image/*"
                   className="sr-only"
-                  disabled={checkingProof}
                   onChange={(e) => pickProof(e.target)}
                 />
               </div>

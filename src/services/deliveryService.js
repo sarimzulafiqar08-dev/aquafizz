@@ -1,7 +1,7 @@
-import { isInSindh } from '../lib/sindh'
+import { isInDeliveryArea } from '../lib/hyderabad'
 
-/** Delivery area = the whole of Sindh. Mirrors public.in_sindh() in the database. */
-export const isDeliverable = (location) => isInSindh(location)
+/** Delivery area = Hyderabad (within DELIVERY_RADIUS_KM of the shop). Mirrors public.in_delivery_area(). */
+export const isDeliverable = (location) => isInDeliveryArea(location)
 
 /** Best-effort street address for a pin (OpenStreetMap Nominatim). Returns '' on failure. */
 export async function reverseGeocode({ lat, lng }) {

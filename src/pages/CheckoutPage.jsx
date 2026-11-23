@@ -8,9 +8,9 @@ import { useCart } from '../context/CartContext'
 import { useCheckout } from '../context/CheckoutContext'
 import { useCartStockSync } from '../hooks/useCartStockSync'
 import { usePageSeo } from '../hooks/usePageSeo'
-import { DELIVERY_WINDOWS, DISTRICTS, PROVINCE } from '../lib/constants'
+import { AREAS, CITY, DELIVERY_WINDOWS } from '../lib/constants'
 import { localDateTimeInput, MIN_SCHEDULE_MINUTES, scheduleError } from '../lib/format'
-import { findDistrict } from '../lib/sindh'
+import { findArea } from '../lib/hyderabad'
 import { hasLocation, lettersOnly, nameError, normalizePhone, phoneError } from '../lib/validation'
 import { isDeliverable, reverseGeocode } from '../services/deliveryService'
 import { OrderSummary } from './CartPage'
@@ -36,7 +36,7 @@ export function CheckoutPage() {
     if (!draft.name && user.name) patch.name = user.name
     if (!draft.phone && user.phone) patch.phone = user.phone
     if (!draft.address && user.address) patch.address = user.address
-    if (!draft.area && DISTRICTS.includes(user.area)) patch.area = user.area
+    if (!draft.area && AREAS.includes(user.area)) patch.area = user.area
     if (!hasLocation(draft.location) && user.location) patch.location = user.location
     if (Object.keys(patch).length) update(patch)
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -70,16 +70,16 @@ export function CheckoutPage() {
     const problem =
       nameError(draft.name, 'Name') ||
       phoneError(draft.phone) ||
-      (!DISTRICTS.includes(draft.area) ? 'Please choose your district.' : '') ||
+      (!AREAS.includes(draft.area) ? 'Please choose your area.' : '') ||
       (!draft.address.trim() ? 'Please enter your address.' : '') ||
       (!hasLocation(draft.location) ? 'Please pin your exact location on the map.' : '') ||
-      (!isDeliverable(draft.location) ? 'Sorry, this location is outside Sindh. We only deliver within Sindh.' : '')
+      (!isDeliverable(draft.location) ? 'Sorry, this location is outside our Hyderabad delivery area.' : '')
     if (problem) {
       setError(problem)
       return
     }
     setError('')
-    if (draft.city !== PROVINCE) update({ city: PROVINCE })
+    if (draft.city !== CITY) update({ city: CITY })
     setStep(2)
   }
 
@@ -127,23 +127,23 @@ export function CheckoutPage() {
                   onChange={(e) => update({ phone: normalizePhone(e.target.value) })}
                 />
               </Field>
-              <Field id="province" label="Province">
-                <input id="province" readOnly className={`${inputClass} bg-slate-50`} value={PROVINCE} />
+              <Field id="province" label="City">
+                <input id="province" readOnly className={`${inputClass} bg-slate-50`} value={CITY} />
               </Field>
-              <Field id="area" label="District">
+              <Field id="area" label="Area">
                 <select
                   id="area"
                   required
                   className={inputClass}
-                  value={DISTRICTS.includes(draft.area) ? draft.area : ''}
+                  value={AREAS.includes(draft.area) ? draft.area : ''}
                   onChange={(e) => {
                     update({ area: e.target.value })
-                    setFocus(findDistrict(e.target.value))
+                    setFocus(findArea(e.target.value))
                     setError('')
                   }}
                 >
-                  <option value="">Select district</option>
-                  {DISTRICTS.map((district) => (
+                  <option value="">Select area</option>
+                  {AREAS.map((district) => (
                     <option key={district} value={district}>
                       {district}
                     </option>

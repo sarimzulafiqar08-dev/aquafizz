@@ -7,7 +7,7 @@ const emptyDraft = {
   phone: '',
   address: '',
   area: '',
-  city: 'Sindh',
+  city: 'Hyderabad',
   instructions: '',
   deliveryWindow: 'asap',
   scheduledAt: '',
