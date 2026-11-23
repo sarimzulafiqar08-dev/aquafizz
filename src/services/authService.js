@@ -36,7 +36,7 @@ export function toPublicUser(row) {
 
 let seeding = null
 export function ensureSeedAdmin() {
-  if (supabase) return Promise.resolve()
+  if (supabase || !DEMO_ADMIN) return Promise.resolve()
   if (!seeding) {
     seeding = (async () => {
       const rows = readUsers()

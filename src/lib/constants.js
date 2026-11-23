@@ -134,12 +134,17 @@ export const STORAGE_KEYS = {
 
 export const ROLES = { user: 'user', admin: 'admin' }
 
-// Demo admin seeded into the local users table on first load.
-export const DEMO_ADMIN = {
-  name: 'AquaFizz Admin',
-  email: 'admin@aquafizz.pk',
-  password: 'Admin@123',
-}
+// Demo admin seeded into the local users table on first load (demo mode only).
+// Vite inlines the env vars at build time, so when Supabase is configured this
+// folds to null and the demo password never ships in the production bundle.
+export const DEMO_ADMIN =
+  import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY
+    ? null
+    : {
+        name: 'AquaFizz Admin',
+        email: 'admin@aquafizz.pk',
+        password: 'Admin@123',
+      }
 
 export const ORDER_STATUSES = ['Placed', 'Confirmed', 'Out for delivery', 'Delivered', 'Cancelled']
 

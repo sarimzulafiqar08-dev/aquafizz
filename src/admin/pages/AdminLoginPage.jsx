@@ -62,7 +62,7 @@ export function AdminLoginPage() {
             {busy ? <Spinner /> : null}
             Sign in
           </button>
-          {usesSupabaseAuth ? null : (
+          {usesSupabaseAuth || !DEMO_ADMIN ? null : (
             <p className="rounded-2xl bg-light-aqua px-4 py-3 text-xs text-slate-600">
               Demo admin: <strong>{DEMO_ADMIN.email}</strong> / <strong>{DEMO_ADMIN.password}</strong>
             </p>
