@@ -8,7 +8,7 @@ export const CONTACT = {
   phone: import.meta.env.VITE_SUPPORT_PHONE || '+923020085811',
   whatsapp: import.meta.env.VITE_WHATSAPP_NUMBER || '923022666385',
   email: import.meta.env.VITE_SUPPORT_EMAIL || 'hello@aquafizz.pk',
-  address: 'Saddar, Hyderabad, Sindh',
+  address: 'Shop No. 15, Saddar, Hyderabad, Sindh',
   hours: 'Daily 10:00 AM – 10:00 PM',
 }
 
