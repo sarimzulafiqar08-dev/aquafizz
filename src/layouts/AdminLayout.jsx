@@ -1,6 +1,7 @@
 import {
   BarChart3,
   CreditCard,
+  Home,
   LayoutDashboard,
   LogOut,
   MessageCircle,
@@ -10,7 +11,8 @@ import {
   Users,
 } from 'lucide-react'
 import { Suspense } from 'react'
-import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { BackButton } from '../components/BackButton'
 import { Spinner } from '../components/Feedback'
 import { useAuth } from '../context/AuthContext'
 import { Logo } from '../components/Logo'
@@ -29,6 +31,7 @@ const links = [
 export function AdminLayout() {
   const { admin, logout } = useAuth()
   const navigate = useNavigate()
+  const { pathname } = useLocation()
 
   return (
     <div className="min-h-dvh bg-slate-50 md:grid md:grid-cols-[16rem_1fr]">
@@ -57,17 +60,23 @@ export function AdminLayout() {
         </nav>
       </aside>
       <div>
-        <header className="flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3">
+        <header className="flex items-center justify-between gap-1 border-b border-slate-200 bg-white px-4 py-3">
+          {pathname === '/admin' ? null : <BackButton fallback="/admin" label="" className="-ml-2 shrink-0 pr-2" />}
           <div className="min-w-0">
             <p className="truncate text-sm font-medium">{admin?.name || 'Admin'}</p>
             <p className="truncate text-xs text-slate-500">{admin?.email}</p>
           </div>
-          <Link to="/" className="ml-auto mr-2 hidden rounded-full px-3 py-2 text-sm text-slate-600 hover:bg-slate-50 sm:inline-block">
-            View store
+          <Link
+            to="/"
+            className="ml-auto inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-2 text-sm text-slate-600 hover:bg-slate-50"
+          >
+            <Home className="h-4 w-4" />
+            <span className="sm:hidden">Store</span>
+            <span className="hidden sm:inline">View store</span>
           </Link>
           <button
             type="button"
-            className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm hover:bg-slate-50"
+            className="inline-flex shrink-0 items-center gap-2 rounded-full px-3 py-2 text-sm hover:bg-slate-50"
             onClick={() => {
               logout()
               navigate('/admin/login')
