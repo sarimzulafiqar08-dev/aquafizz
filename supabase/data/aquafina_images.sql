@@ -7,7 +7,9 @@ begin;
 with pics(slug, path) as (
   values
     ('aquafina-2', '/images/products/aquafina-340ml.jpg'),
-    ('aquafina',   '/images/products/aquafina-1500ml.jpg')
+    ('aquafina',   '/images/products/aquafina-1500ml.jpg'),
+    ('aquafina-3', '/images/products/aquafina-5l.jpg'),
+    ('aquafina-4', '/images/products/aquafina-15l.jpg')
 )
 update public.products p
 set images = array_prepend(pics.path, array_remove(coalesce(p.images, '{}'), pics.path)),
