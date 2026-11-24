@@ -9,7 +9,7 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'icons/icon.svg', 'apple-touch-icon.svg'],
+      includeAssets: ['favicon.svg', 'icons/icon.svg', 'apple-touch-icon.svg', 'apple-touch-icon.png'],
       manifest: {
         name: 'AquaFizz – Drinks On Demand',
         short_name: 'AquaFizz',
@@ -21,7 +21,11 @@ export default defineConfig({
         start_url: '/',
         scope: '/',
         lang: 'en',
+        // PNGs first: Android's install prompt needs raster 192/512 icons.
         icons: [
+          { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+          { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+          { src: '/icons/icon-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
           {
             src: '/icons/icon.svg',
             sizes: 'any',

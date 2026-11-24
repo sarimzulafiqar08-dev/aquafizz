@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { CONTACT } from '../lib/constants'
+import { InstallAppButton } from './InstallApp'
 import { Logo } from './Logo'
 
 export function Footer() {
@@ -11,6 +12,7 @@ export function Footer() {
           <p className="mt-4 max-w-sm text-sm text-slate-300">
             Fresh drinks, cold beverages and quality water delivered conveniently to your doorstep.
           </p>
+          <InstallAppButton className="mt-5 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-black hover:bg-white" />
         </div>
         <div>
           <h2 className="text-sm font-semibold tracking-wide uppercase">Links</h2>

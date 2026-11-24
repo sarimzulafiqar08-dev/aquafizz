@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { InstallAppBanner } from '../components/InstallApp'
 import { categories } from '../lib/catalog'
 import { usePageSeo } from '../hooks/usePageSeo'
 
@@ -38,6 +39,7 @@ export function HomePage() {
 
   return (
     <div className="space-y-16">
+      <InstallAppBanner className="mb-4" />
       <section className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-light-aqua via-white to-primary/20 px-6 py-12 md:px-12 md:py-16">
         <Bubbles />
         <div className="relative grid items-center gap-10 md:grid-cols-2">

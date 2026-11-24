@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext'
 import { useCart } from '../context/CartContext'
 import { useWishlist } from '../context/WishlistContext'
 import { NAV_LINKS } from '../lib/constants'
+import { InstallAppButton } from './InstallApp'
 import { Logo } from './Logo'
 
 export function Header() {
@@ -173,6 +174,7 @@ export function Header() {
                 </NavLink>
               ) : null}
             </nav>
+            <InstallAppButton className="mt-4 w-full justify-center rounded-full bg-black py-3 text-sm font-semibold text-white" />
           </div>
         </div>,
         document.body,

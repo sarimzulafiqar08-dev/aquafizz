@@ -10,6 +10,7 @@ import { ConfirmProvider } from './context/ConfirmContext.jsx'
 import { ToastProvider } from './context/ToastContext.jsx'
 import { WishlistProvider } from './context/WishlistContext.jsx'
 import './index.css'
+import './lib/installPrompt.js' // start listening for the install prompt before React mounts
 import { isSupabaseConfigured } from './services/supabaseClient.js'
 
 // The installed app often resumes from the background instead of starting fresh, so it
