@@ -7,7 +7,9 @@ begin;
 with pics(slug, path) as (
   values
     ('d-nova-water',   '/images/products/d-nova-water-500ml.jpg'),
-    ('d-nova-water-2', '/images/products/d-nova-water-1500ml.jpg')
+    ('d-nova-water-2', '/images/products/d-nova-water-1500ml.jpg'),
+    ('d-nova-water-3', '/images/products/d-nova-water-5l.jpg'),
+    ('d-nova-water-4', '/images/products/d-nova-water-15l.jpg')
 )
 update public.products p
 set images = array_prepend(pics.path, array_remove(coalesce(p.images, '{}'), pics.path)),
