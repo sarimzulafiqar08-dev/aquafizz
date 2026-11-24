@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useMemo, useState } from 'react'
-import { STORAGE_KEYS } from '../lib/constants'
+import { DELIVERY_WINDOWS, STORAGE_KEYS } from '../lib/constants'
 import { readJson, writeJson } from '../lib/storage'
 
 const emptyDraft = {
@@ -18,10 +18,14 @@ const emptyDraft = {
 const CheckoutContext = createContext(null)
 
 export function CheckoutProvider({ children }) {
-  const [draft, setDraft] = useState(() => ({
-    ...emptyDraft,
-    ...readJson(STORAGE_KEYS.checkout, {}),
-  }))
+  const [draft, setDraft] = useState(() => {
+    const saved = { ...emptyDraft, ...readJson(STORAGE_KEYS.checkout, {}) }
+    // A draft saved before a delivery option was removed falls back to ASAP.
+    if (!DELIVERY_WINDOWS.some((slot) => slot.id === saved.deliveryWindow)) {
+      saved.deliveryWindow = emptyDraft.deliveryWindow
+    }
+    return saved
+  })
 
   const update = useCallback((patch) => {
     setDraft((current) => {

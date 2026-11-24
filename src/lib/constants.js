@@ -17,7 +17,6 @@ export { CITY, AREA_NAMES as AREAS } from './hyderabad'
 
 export const DELIVERY_WINDOWS = [
   { id: 'asap', label: 'ASAP', hint: 'Fastest available slot' },
-  { id: '30-60', label: '2–3 Days', hint: 'Standard delivery' }, // id kept for saved checkout drafts
   { id: '1-2', label: '1–2 Hours', hint: 'Flexible window' },
   { id: 'evening', label: 'Today Evening', hint: '6:00 PM – 10:00 PM' },
   { id: 'schedule', label: 'Schedule Delivery', hint: 'Pick a later time' },
