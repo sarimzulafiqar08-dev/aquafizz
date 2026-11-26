@@ -5,7 +5,7 @@ import { readJson, writeJson } from '../lib/storage'
 const CartContext = createContext(null)
 
 /** Most of one product a customer can order at once. */
-export const MAX_PER_ITEM = 500
+export const MAX_PER_ITEM = 1000
 
 /** Highest quantity allowed for a product with this stock (unknown stock → MAX_PER_ITEM). */
 export function maxFor(stock) {

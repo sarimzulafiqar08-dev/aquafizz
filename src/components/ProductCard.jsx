@@ -8,7 +8,7 @@ import { formatPKR, stockLabel } from '../lib/format'
 import { ProductImage } from './ProductImage'
 
 /**
- * − [ 12 ] + control. The number can also be typed (e.g. 500 bottles at once):
+ * − [ 12 ] + control. The number can also be typed (e.g. 1000 bottles at once):
  * valid numbers apply as you type, anything above `max` is capped, and an empty
  * box goes back to the current value when you leave it.
  */
