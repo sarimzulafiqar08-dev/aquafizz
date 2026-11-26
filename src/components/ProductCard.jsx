@@ -1,4 +1,5 @@
 import { Heart, Minus, Plus } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { MAX_PER_ITEM, maxFor, useCart } from '../context/CartContext'
 import { useToast } from '../context/ToastContext'
@@ -6,20 +7,72 @@ import { useWishlist } from '../context/WishlistContext'
 import { formatPKR, stockLabel } from '../lib/format'
 import { ProductImage } from './ProductImage'
 
+/**
+ * − [ 12 ] + control. The number can also be typed (e.g. 500 bottles at once):
+ * valid numbers apply as you type, anything above `max` is capped, and an empty
+ * box goes back to the current value when you leave it.
+ */
 export function QuantitySelector({ value, onChange, min = 1, max = MAX_PER_ITEM, disabled, compact = false, className = '' }) {
   const btn = compact ? 'h-8 w-8' : 'h-9 w-9'
+  const [text, setText] = useState(String(value))
+  const [capped, setCapped] = useState(false)
+
+  // Follow outside changes (the − / + buttons, stock refresh) unless the box is mid-edit with that same number.
+  useEffect(() => {
+    setText((t) => (Number(t) === value ? t : String(value)))
+  }, [value])
+
+  const apply = (n) => {
+    const next = Math.min(max, Math.max(min, n))
+    setCapped(n > max)
+    if (next !== value) onChange(next)
+    return next
+  }
+
   return (
-    <div className={`inline-flex items-center justify-between rounded-full border border-slate-200 ${className}`}>
+    <div className={`relative inline-flex items-center justify-between rounded-full border border-slate-200 ${className}`}>
       <button
         type="button"
         aria-label="Decrease quantity"
         disabled={disabled || value <= min}
         className={`grid ${btn} place-items-center disabled:opacity-40`}
-        onClick={() => onChange(value - 1)}
+        onClick={() => {
+          setCapped(false)
+          onChange(value - 1)
+        }}
       >
         <Minus className="h-4 w-4" />
       </button>
-      <span className="min-w-8 text-center text-sm font-semibold">{value}</span>
+      <input
+        type="text"
+        inputMode="numeric"
+        pattern="[0-9]*"
+        aria-label="Quantity"
+        disabled={disabled}
+        value={text}
+        onFocus={(e) => e.target.select()}
+        onChange={(e) => {
+          const digits = e.target.value.replace(/\D/g, '').slice(0, 4)
+          if (!digits) {
+            setText('')
+            return
+          }
+          const n = Number(digits)
+          if (n < min) {
+            setText(digits) // e.g. a lone "0" while typing — fixed on blur
+            return
+          }
+          setText(String(apply(n)))
+        }}
+        onBlur={() => {
+          const n = Number(text)
+          setText(String(text && n >= min ? apply(n) : value))
+        }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') e.currentTarget.blur()
+        }}
+        className="w-12 min-w-0 flex-1 bg-transparent text-center text-sm font-semibold outline-none focus:rounded-md focus:bg-light-aqua disabled:opacity-60"
+      />
       <button
         type="button"
         aria-label="Increase quantity"
@@ -29,6 +82,11 @@ export function QuantitySelector({ value, onChange, min = 1, max = MAX_PER_ITEM,
       >
         <Plus className="h-4 w-4" />
       </button>
+      {capped ? (
+        <span role="status" className="absolute top-full left-1/2 mt-1 -translate-x-1/2 text-[11px] font-medium whitespace-nowrap text-amber-600">
+          Max {max}
+        </span>
+      ) : null}
     </div>
   )
 }

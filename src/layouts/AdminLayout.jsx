@@ -8,6 +8,7 @@ import {
   Package,
   Settings,
   ShoppingBag,
+  TrendingUp,
   Users,
 } from 'lucide-react'
 import { Suspense } from 'react'
@@ -20,6 +21,7 @@ import { Logo } from '../components/Logo'
 const links = [
   { to: '/admin', label: 'Overview', icon: LayoutDashboard, end: true },
   { to: '/admin/orders', label: 'Orders', icon: ShoppingBag },
+  { to: '/admin/reports', label: 'Reports', icon: TrendingUp },
   { to: '/admin/products', label: 'Products', icon: Package },
   { to: '/admin/users', label: 'Users', icon: Users },
   { to: '/admin/payments', label: 'Payments', icon: CreditCard },
@@ -34,8 +36,8 @@ export function AdminLayout() {
   const { pathname } = useLocation()
 
   return (
-    <div className="min-h-dvh bg-slate-50 md:grid md:grid-cols-[16rem_1fr]">
-      <aside className="hidden border-r border-slate-200 bg-white p-4 md:block">
+    <div className="min-h-dvh bg-slate-50 md:grid md:grid-cols-[16rem_1fr] print:!block print:bg-white">
+      <aside className="hidden border-r border-slate-200 bg-white p-4 md:block print:!hidden">
         <Logo compact />
         <p className="mt-2 text-xs text-slate-500">Operations dashboard</p>
         <nav className="mt-6 grid gap-1" aria-label="Admin">
@@ -60,7 +62,7 @@ export function AdminLayout() {
         </nav>
       </aside>
       <div>
-        <header className="flex items-center justify-between gap-1 border-b border-slate-200 bg-white px-4 py-3">
+        <header className="flex items-center justify-between gap-1 border-b border-slate-200 bg-white px-4 py-3 print:!hidden">
           {pathname === '/admin' ? null : <BackButton fallback="/admin" label="" className="-ml-2 shrink-0 pr-2" />}
           <div className="min-w-0">
             <p className="truncate text-sm font-medium">{admin?.name || 'Admin'}</p>
@@ -86,7 +88,7 @@ export function AdminLayout() {
             Sign out
           </button>
         </header>
-        <nav className="flex gap-2 overflow-x-auto border-b border-slate-200 bg-white px-3 py-2 md:hidden" aria-label="Admin mobile">
+        <nav className="flex gap-2 overflow-x-auto border-b border-slate-200 bg-white px-3 py-2 md:hidden print:!hidden" aria-label="Admin mobile">
           {links.map((link) => (
             <NavLink
               key={link.to}

@@ -66,6 +66,34 @@ export async function listOrders() {
   return listLocalOrders()
 }
 
+/**
+ * Orders created in [from, to) — used by the sales reports (admin).
+ * Fetched in pages because Supabase returns at most 1000 rows per request.
+ */
+export async function listOrdersBetween(from, to) {
+  if (supabase) {
+    const PAGE = 1000
+    const all = []
+    for (let start = 0; ; start += PAGE) {
+      const rows = unwrap(
+        await supabase
+          .from('orders')
+          .select('*')
+          .gte('created_at', from.toISOString())
+          .lt('created_at', to.toISOString())
+          .order('created_at', { ascending: true })
+          .range(start, start + PAGE - 1),
+      )
+      all.push(...rows.map(fromRow))
+      if (rows.length < PAGE) return all
+    }
+  }
+  return listLocalOrders().filter((o) => {
+    const t = new Date(o.createdAt).getTime()
+    return t >= from.getTime() && t < to.getTime()
+  })
+}
+
 /** Orders for the signed-in user, or orders placed on this device for guests. */
 export async function listMyOrders(userId) {
   if (supabase && userId) {
